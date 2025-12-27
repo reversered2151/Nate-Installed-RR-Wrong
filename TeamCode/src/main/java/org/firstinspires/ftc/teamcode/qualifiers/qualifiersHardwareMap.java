@@ -31,7 +31,7 @@ public class qualifiersHardwareMap {
 
         uptake = hardwareMap.get(DcMotorEx.class, "uptake");
         uptake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        uptake.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        uptake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         imu = hardwareMap.get(IMU.class, "imu");
 
