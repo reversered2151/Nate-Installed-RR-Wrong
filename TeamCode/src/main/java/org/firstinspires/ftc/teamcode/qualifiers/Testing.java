@@ -43,6 +43,7 @@ public class Testing extends LinearOpMode {
 
             if (lb && !lb_prev) {
                 targetRpm += 100;
+                //targetRpm += 100;
             }
 
             if (rb && !rb_prev) {
@@ -57,7 +58,7 @@ public class Testing extends LinearOpMode {
                 uptake.setPower(0);
             }
 
-
+            flywheel.setVelocity(targetRpm);
             telemetry.addLine("Controls: LB = increase speed, RB = reset speed");
             telemetry.addLine("Target RPM:"+ targetRpm);
             telemetry.update();
