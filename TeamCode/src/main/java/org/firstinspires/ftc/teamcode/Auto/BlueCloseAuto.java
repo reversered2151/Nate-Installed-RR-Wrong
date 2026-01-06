@@ -28,37 +28,42 @@ public class BlueCloseAuto extends LinearOpMode {
     static double launchY = -16;
     static Vector2d launchPose = new Vector2d(launchX,launchY);
 
-    public class intake {
+    public class inandup {
         private DcMotorEx intake;
-        public intake(HardwareMap hardwareMap) {
+        private DcMotorEx uptake;
+
+        public inandup(HardwareMap hardwareMap) {
             intake = hardwareMap.get(DcMotorEx.class, "intake");
             intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             intake.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        }
-    }
-    public class uptake {
-        private DcMotorEx uptake;
-
-        public uptake(HardwareMap hardwareMap) {
             uptake = hardwareMap.get(DcMotorEx.class, "uptake");
             uptake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             uptake.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        }
+
+        public class intup implements Action {
+            @Override
+            public boolean run(@NonNull TelemetryPacket packet) {
+                intake.setPower(.7);
+                uptake.setPower(.7);
+                return false;
+            }
+        }
+
+        public Action intup() {
+            return new intup();
+
         }
     }
-    public class flywheel {
-        private DcMotorEx flywheel;
 
-        public flywheel(HardwareMap hardwareMap) {
+    public class shootingactions {
+        private DcMotorEx flywheel;
+        private Servo blocker;
+        public shootingactions(HardwareMap hardwareMap) {
             flywheel = hardwareMap.get(DcMotorEx.class,"flywheel");
             flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
             flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        }
-    }
-    public class blocker {
-        private Servo blocker;
-
-        public blocker(HardwareMap hardwareMap) {
             blocker = hardwareMap.get(Servo.class, "blocker");
         }
     }
@@ -68,20 +73,23 @@ public class BlueCloseAuto extends LinearOpMode {
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(-56, -43, Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        //Claw claw = new Claw(hardwareMap);
-        //Lift lift = new Lift(hardwareMap);
+        inandup allintake = new inandup(hardwareMap);
+        shootingactions shooter = new shootingactions(hardwareMap);
 
         TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
-                .splineTo(launchPose,Math.toRadians(45));
+                .splineTo(launchPose,Math.toRadians(45))
                 //shoot
+                .waitSeconds(3);
+
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(-8,-26),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-8,-48), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-8,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(initialPose)
-                .splineTo(launchPose,Math.toRadians(225));
+                .splineTo(launchPose,Math.toRadians(225))
                 //shoot
+                .waitSeconds(3);
 
         TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(initialPose)
                 .strafeToLinearHeading(new Vector2d(16,-26),Math.toRadians(-90))
@@ -89,8 +97,8 @@ public class BlueCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(16,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(initialPose)
-                .splineTo(launchPose,Math.toRadians(225));
-                //shoot
+                .splineTo(launchPose,Math.toRadians(225))
+                .waitSeconds(3);
 
         // actions that need to happen on init; for instance, a claw tightening.
 
@@ -113,6 +121,7 @@ public class BlueCloseAuto extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
+                        allintake.intup(),
                         shootFirst,
                         intakeFirst,
                         shootSecond,

@@ -88,9 +88,11 @@ public class Testing extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 blockerpos = .95;
+                //servo closed
             }
             if (gamepad1.dpad_down) {
                 blockerpos = .6;
+                //servo open
             }
 
             flywheel.setVelocity(targetRpm);
