@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -28,53 +29,13 @@ public class BlueCloseAuto extends LinearOpMode {
     static double launchY = -16;
     static Vector2d launchPose = new Vector2d(launchX,launchY);
 
-    public class inandup {
-        private DcMotorEx intake;
-        private DcMotorEx uptake;
-
-        public inandup(HardwareMap hardwareMap) {
-            intake = hardwareMap.get(DcMotorEx.class, "intake");
-            intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            intake.setDirection(DcMotorSimple.Direction.REVERSE);
-            uptake = hardwareMap.get(DcMotorEx.class, "uptake");
-            uptake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            uptake.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        }
-
-        public class intup implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                intake.setPower(.7);
-                uptake.setPower(.7);
-                return false;
-            }
-        }
-
-        public Action intup() {
-            return new intup();
-
-        }
-    }
-
-    public class shootingactions {
-        private DcMotorEx flywheel;
-        private Servo blocker;
-        public shootingactions(HardwareMap hardwareMap) {
-            flywheel = hardwareMap.get(DcMotorEx.class,"flywheel");
-            flywheel.setDirection(DcMotorSimple.Direction.REVERSE);
-            flywheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-            blocker = hardwareMap.get(Servo.class, "blocker");
-        }
-    }
 
 
     @Override
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(-56, -43, Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        inandup allintake = new inandup(hardwareMap);
-        shootingactions shooter = new shootingactions(hardwareMap);
+        mechanisms m = new mechanisms(hardwareMap);
 
         TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
                 .splineTo(launchPose,Math.toRadians(45))
@@ -121,12 +82,19 @@ public class BlueCloseAuto extends LinearOpMode {
 
         Actions.runBlocking(
                 new SequentialAction(
-                        allintake.intup(),
+                        m.blockerClose(), 
                         shootFirst,
+                        m.shootingSequence,
+                        new SleepAction(0.5),
+
                         intakeFirst,
                         shootSecond,
+                        m.shootingSequence,
+                        new SleepAction(0.5),
+
                         intakeSecond,
-                        shootThird
+                        shootThird,
+                        m.shootingSequence
 
                 )
         );
