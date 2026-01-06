@@ -6,7 +6,7 @@ import com.noahbres.meepmeep.MeepMeep;
 import com.noahbres.meepmeep.roadrunner.DefaultBotBuilder;
 import com.noahbres.meepmeep.roadrunner.entity.RoadRunnerBotEntity;
 
-public class FarRedAuto {
+public class FarRedAutoTest {
 
     //Location for the robot to start
     //TODO Change if starting close/far and for red/blue
