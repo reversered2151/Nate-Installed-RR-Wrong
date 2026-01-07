@@ -37,28 +37,28 @@ public class BlueCloseAuto extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         mechanisms m = new mechanisms(hardwareMap);
 
-        TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder ShootPreload = drive.actionBuilder(drive.localizer.getPose())
                 .splineTo(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(new Vector2d(-12,-22),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(drive.localizer.getPose())
                 .splineTo(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(new Vector2d(13,-22),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(drive.localizer.getPose())
                 .splineTo(launchPose,Math.toRadians(45.5));
 
-        TrajectoryActionBuilder leave = drive.actionBuilder(initialPose)
+        TrajectoryActionBuilder leave = drive.actionBuilder(drive.localizer.getPose())
                 .strafeToLinearHeading(new Vector2d(15,15),Math.toRadians(45));
         // actions that need to happen on init; for instance, a claw tightening.
 
