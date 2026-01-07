@@ -35,8 +35,8 @@ public class mechanisms {
     public class intup implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            intake.setPower(.7);
-            uptake.setPower(.7);
+            intake.setPower(.8);
+            uptake.setPower(.8);
             return false;
         }
     }
@@ -62,12 +62,23 @@ public class mechanisms {
     public class flywheelSpin implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            flywheel.setVelocity(1000);
+            flywheel.setVelocity(1237);
             return false;
         }
     }
     public Action flywheelSpin() {
         return new flywheelSpin();
+    }
+
+    public class flywheelSpin2 implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket packet) {
+            flywheel.setVelocity(1230);
+            return false;
+        }
+    }
+    public Action flywheelSpin2() {
+        return new flywheelSpin2();
     }
 
     public class flywheelStop implements Action {
@@ -109,10 +120,40 @@ public class mechanisms {
         new SleepAction(1),
         blockerOpen(),
         intup(),
-        new SleepAction(2),
+        new SleepAction(1),
+        flywheelSpin2(),
+        new SleepAction(1),
         flywheelStop(),
         blockerClose()
     );
+
+    public SequentialAction shootingSequence2 = new SequentialAction(
+            intupoff(),
+            flywheelSpin(),
+            new SleepAction(1),
+            blockerOpen(),
+            intup(),
+            new SleepAction(1),
+            flywheelSpin2(),
+            new SleepAction(1),
+            flywheelStop(),
+            blockerClose()
+    );
+
+    public SequentialAction shootingSequence3 = new SequentialAction(
+            intupoff(),
+            flywheelSpin(),
+            new SleepAction(1),
+            blockerOpen(),
+            intup(),
+            new SleepAction(1),
+            flywheelSpin2(),
+            new SleepAction(1),
+            flywheelStop(),
+            blockerClose()
+    );
+
+
 
 
 }

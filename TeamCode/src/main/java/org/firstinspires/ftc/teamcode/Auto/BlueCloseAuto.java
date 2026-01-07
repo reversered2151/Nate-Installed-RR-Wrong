@@ -25,42 +25,41 @@ import org.firstinspires.ftc.teamcode.qualifiers.qualifiersHardwareMap;
 @Autonomous(name = "Close Blue Auto", group = "Autonomous")
 public class BlueCloseAuto extends LinearOpMode {
     qualifiersHardwareMap hardware = new qualifiersHardwareMap();
-    static double launchX = -16;
-    static double launchY = -16;
+    static double launchX = -24;
+    static double launchY = -24;
     static Vector2d launchPose = new Vector2d(launchX,launchY);
 
 
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(-56, -43, Math.toRadians(45));
+        Pose2d initialPose = new Pose2d(-57, -42, Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         mechanisms m = new mechanisms(hardwareMap);
 
         TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
-                .splineTo(launchPose,Math.toRadians(45))
+                .splineTo(launchPose,Math.toRadians(45));
                 //shoot
-                .waitSeconds(3);
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(-8,-26),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-8,-48), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-8,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-12,-22),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(initialPose)
-                .splineTo(launchPose,Math.toRadians(225))
+                .splineTo(launchPose,Math.toRadians(45));
                 //shoot
-                .waitSeconds(3);
 
         TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(16,-26),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(16,-48), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(16,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(13,-22),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(initialPose)
-                .splineTo(launchPose,Math.toRadians(225))
-                .waitSeconds(3);
+                .splineTo(launchPose,Math.toRadians(45.5));
 
+        TrajectoryActionBuilder leave = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(new Vector2d(15,15),Math.toRadians(45));
         // actions that need to happen on init; for instance, a claw tightening.
 
         //init loop
@@ -79,22 +78,26 @@ public class BlueCloseAuto extends LinearOpMode {
         Action shootSecond = ShootFirstStack.build();
         Action intakeSecond = IntakeSecondStack.build();
         Action shootThird = ShootSecondStack.build();
+        Action Leave = leave.build();
 
         Actions.runBlocking(
                 new SequentialAction(
-                        m.blockerClose(), 
+                        m.blockerClose(),
                         shootFirst,
                         m.shootingSequence,
-                        new SleepAction(0.5),
+                        m.blockerClose(),
 
                         intakeFirst,
                         shootSecond,
-                        m.shootingSequence,
-                        new SleepAction(0.5),
+                        m.shootingSequence2,
+                        m.blockerClose(),
 
                         intakeSecond,
                         shootThird,
-                        m.shootingSequence
+                        m.shootingSequence3,
+                        m.blockerClose(),
+
+                        Leave
 
                 )
         );

@@ -69,8 +69,8 @@ public class Testing extends LinearOpMode {
 
 
             if (lb && !lb_prev) {
-                targetRpm += 500;
-                //targetRpm += 100;
+                //targetRpm += 500;
+                targetRpm += 100;
             }
 
             if (rb && !rb_prev) {
