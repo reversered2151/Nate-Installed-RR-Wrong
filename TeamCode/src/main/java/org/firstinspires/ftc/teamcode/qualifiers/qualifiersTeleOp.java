@@ -70,6 +70,10 @@ public class qualifiersTeleOp extends LinearOpMode {
     DcMotorEx flywheel;
     DcMotorEx intake;
     DcMotorEx uptake;
+    DcMotorEx fl;
+    DcMotorEx fr;
+    DcMotorEx bl;
+    DcMotorEx br;
 
     Servo blocker;
 
@@ -85,6 +89,10 @@ public class qualifiersTeleOp extends LinearOpMode {
         intake = hardware.intake;
         uptake = hardware.uptake;
         blocker = hardware.blocker;
+        fl = hardware.fl;
+        fr = hardware.fr;
+        bl = hardware.bl;
+        br = hardware.br;
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
@@ -314,6 +322,20 @@ public class qualifiersTeleOp extends LinearOpMode {
 
             rotX = rotX * 1.1;  // Counteract imperfect strafing
 
+            // Denominator is the largest motor power (absolute value) or 1
+            // This ensures all the powers maintain the same ratio,
+            // but only if at least one is out of the range [-1, 1]
+            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+            double flPower = (rotY + rotX + rx) / denominator;
+            double blPower = (rotY - rotX + rx) / denominator;
+            double frPower = (rotY - rotX - rx) / denominator;
+            double brPower = (rotY + rotX - rx) / denominator;
+
+            fl.setPower(flPower);
+            bl.setPower(blPower);
+            fr.setPower(frPower);
+            br.setPower(brPower);
+            
             // Use Road Runner's setDrivePowers to maintain localization
             PoseVelocity2d driveVelocity = new PoseVelocity2d(
                 new Vector2d(rotY, rotX),  // Linear velocity (forward/strafe)
