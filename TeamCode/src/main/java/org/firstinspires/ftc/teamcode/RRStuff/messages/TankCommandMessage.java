@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.messages;
+package org.firstinspires.ftc.teamcode.RRStuff.messages;
 
 public final class TankCommandMessage {
     public long timestamp;

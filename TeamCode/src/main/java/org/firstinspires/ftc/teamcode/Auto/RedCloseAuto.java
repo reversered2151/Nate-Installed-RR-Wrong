@@ -9,7 +9,8 @@ import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.LocalizationHelper;
+import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
 @Config
 @Autonomous(name = "Close Red Auto", group = "Autonomous")
@@ -62,5 +63,8 @@ public class RedCloseAuto extends LinearOpMode {
                         trajectoryActionChosen
                 )
         );
+
+        // Save final pose for TeleOp handoff
+        LocalizationHelper.savePoseForTeleOp(drive);
     }
 }

@@ -15,13 +15,8 @@ public class qualifiersHardwareMap {
 
     public Servo blocker;
 
-//    HuskyLens huskyLens;
 
     public void init(HardwareMap hardwareMap){
-        // Color Sensor
-//        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "color");
-        // Camera
-//        huskyLens  = hardwareMap.get(HuskyLens.class,"huskyLens");
 
         br = hardwareMap.get(DcMotorEx.class, "backRight");
         bl = hardwareMap.get(DcMotorEx.class, "backLeft");
