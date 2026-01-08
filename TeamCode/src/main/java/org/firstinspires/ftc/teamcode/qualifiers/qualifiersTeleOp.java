@@ -26,9 +26,9 @@ public class qualifiersTeleOp extends LinearOpMode {
     private static final double REGRESSION_INTERCEPT = 1000.0; // TODO: Update with actual intercept from regression
 
     // Goal positions on field (in inches, measured from field center)
-    private static final double BLUE_GOAL_X = -60.0;  // TODO: Update with actual blue basket position
+    private static final double BLUE_GOAL_X = -60.0;
     private static final double BLUE_GOAL_Y = -60.0;
-    private static final double RED_GOAL_X = 60.0;    // TODO: Update with actual red basket position
+    private static final double RED_GOAL_X = 60.0;
     private static final double RED_GOAL_Y = 60.0;
 
     // Flywheel limits
@@ -316,8 +316,8 @@ public class qualifiersTeleOp extends LinearOpMode {
 
             // Use Road Runner's setDrivePowers to maintain localization
             PoseVelocity2d driveVelocity = new PoseVelocity2d(
-                new Vector2d(rotY, rotX),  // Linear velocity (forward/strafe)
-                rx                          // Angular velocity (rotation)
+                new Vector2d(-rotY, -rotX),  // Linear velocity (forward/strafe)
+                -rx                          // Angular velocity (rotation)
             );
             drive.setDrivePowers(driveVelocity);
         }

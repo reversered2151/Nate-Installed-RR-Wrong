@@ -39,17 +39,17 @@ public class CloseBlueAutoTest {
                 .splineTo(launchPose,Math.toRadians(45))
                 //Shoot (waitSeconds is placeholder for shooting)
                 .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(-10,-32),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12,-22),Math.toRadians(-90))
                 //Pick up artifacts
-                .strafeToLinearHeading(new Vector2d(-10,-52), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-10,-40), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90))
                 .splineTo(launchPose,Math.toRadians(45))
                 .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(14,-32),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(13,-22),Math.toRadians(-90))
                 //Pick up artifacts
-                .strafeToLinearHeading(new Vector2d(14,-52), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(14,-40), Math.toRadians(-90))
-                .splineTo(launchPose,Math.toRadians(45))
+                .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90))
+                .splineTo(launchPose,Math.toRadians(45.5))
                 .waitSeconds(4)
                 .build());
 
