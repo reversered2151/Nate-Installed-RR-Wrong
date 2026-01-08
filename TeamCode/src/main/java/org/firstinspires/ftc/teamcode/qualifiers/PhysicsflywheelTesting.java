@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.LocalizationHelper;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
 @TeleOp(name = "Flywheel Testing (Localization)", group = "qualifiers")
-public class flywheelTesting extends LinearOpMode {
+public class PhysicsflywheelTesting extends LinearOpMode {
 
     // ========================================================================
     // CONFIGURATION SECTION - ADJUST THESE VALUES FOR OUR ROBOT

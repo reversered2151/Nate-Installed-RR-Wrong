@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 import org.firstinspires.ftc.teamcode.qualifiers.qualifiersHardwareMap;
 
 @Config
@@ -59,7 +59,7 @@ public class BlueCloseAuto extends LinearOpMode {
                 .splineTo(launchPose,Math.toRadians(45.5));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(new Vector2d(15,15),Math.toRadians(45));
+                .splineTo(new Vector2d(15,-15),Math.toRadians(-90));
         // actions that need to happen on init; for instance, a claw tightening.
 
         //init loop
@@ -86,16 +86,19 @@ public class BlueCloseAuto extends LinearOpMode {
                         shootFirst,
                         m.shootingSequence,
                         m.blockerClose(),
+                        new SleepAction(.5),
 
                         intakeFirst,
                         shootSecond,
                         m.shootingSequence2,
                         m.blockerClose(),
+                        new SleepAction(.5),
 
                         intakeSecond,
                         shootThird,
                         m.shootingSequence3,
                         m.blockerClose(),
+                        new SleepAction(.5),
 
                         Leave
 
