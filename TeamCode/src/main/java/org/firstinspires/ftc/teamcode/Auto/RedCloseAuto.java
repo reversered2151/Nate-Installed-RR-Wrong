@@ -15,13 +15,13 @@ import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 @Config
 @Autonomous(name = "Close Red Auto", group = "Autonomous")
 public class RedCloseAuto extends LinearOpMode {
-    static double launchX = -24;
-    static double launchY = 24;
+    static double launchX = -16;
+    static double launchY = 16;
     static Vector2d launchPose = new Vector2d(launchX,launchY);
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(-57, 42, Math.toRadians(45));
+        Pose2d initialPose = new Pose2d(-50, 50, Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         //Claw claw = new Claw(hardwareMap);
         //Lift lift = new Lift(hardwareMap);
