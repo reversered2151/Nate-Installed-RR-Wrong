@@ -1,24 +1,17 @@
 package org.firstinspires.ftc.teamcode.Auto;
-import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
-import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.MecanumDrive;
+import org.firstinspires.ftc.teamcode.LocalizationHelper;
+import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 import org.firstinspires.ftc.teamcode.qualifiers.qualifiersHardwareMap;
 
 @Config
@@ -37,28 +30,28 @@ public class BlueCloseAuto extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         mechanisms m = new mechanisms(hardwareMap);
 
-        TrajectoryActionBuilder ShootPreload = drive.actionBuilder(drive.localizer.getPose())
+        TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
                 .splineTo(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(drive.localizer.getPose())
+        TrajectoryActionBuilder IntakeFirstStack = ShootPreload
                 .strafeToLinearHeading(new Vector2d(-12,-22),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(drive.localizer.getPose())
+        TrajectoryActionBuilder ShootFirstStack = IntakeFirstStack
                 .splineTo(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(drive.localizer.getPose())
+        TrajectoryActionBuilder IntakeSecondStack = ShootFirstStack
                 .strafeToLinearHeading(new Vector2d(13,-22),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(drive.localizer.getPose())
+        TrajectoryActionBuilder ShootSecondStack = IntakeSecondStack
                 .splineTo(launchPose,Math.toRadians(45.5));
 
-        TrajectoryActionBuilder leave = drive.actionBuilder(drive.localizer.getPose())
+        TrajectoryActionBuilder leave = ShootSecondStack
                 .strafeToLinearHeading(new Vector2d(15,15),Math.toRadians(45));
         // actions that need to happen on init; for instance, a claw tightening.
 
@@ -101,5 +94,8 @@ public class BlueCloseAuto extends LinearOpMode {
 
                 )
         );
+
+        // Save final pose for TeleOp handoff
+        LocalizationHelper.savePoseForTeleOp(drive);
     }
 }
