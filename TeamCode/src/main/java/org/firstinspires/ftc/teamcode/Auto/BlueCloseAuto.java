@@ -41,24 +41,24 @@ public class BlueCloseAuto extends LinearOpMode {
                 .splineTo(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(Math.toRadians(45), launchX, launchY))
+        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
                 .strafeToLinearHeading(new Vector2d(-12,-22),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d(Math.toRadians(-90), -12, -40))
+        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -12, -40, Math.toRadians(-90)))
                 .splineTo(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d(Math.toRadians(45), launchX, launchY))
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
                 .strafeToLinearHeading(new Vector2d(13,-22),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d(Math.toRadians(-90), 13, -40))
+        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 13, -40,Math.toRadians(-90)))
                 .splineTo(launchPose,Math.toRadians(45.5));
 
-        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(Math.toRadians(45.5), launchX, launchY))
+        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45.5)))
                 .splineTo(new Vector2d(15,-15),Math.toRadians(-90));
         // actions that need to happen on init; for instance, a claw tightening.
 
