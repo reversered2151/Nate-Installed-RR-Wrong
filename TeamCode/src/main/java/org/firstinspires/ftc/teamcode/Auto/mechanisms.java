@@ -120,7 +120,7 @@ public class mechanisms {
         new SleepAction(1),
         blockerOpen(),
         intup(),
-        new SleepAction(1.5),
+        new SleepAction(1),
         flywheelSpin2(),
         new SleepAction(1),
         flywheelStop(),

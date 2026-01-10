@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.teamcode.LocalizationHelper;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 import org.firstinspires.ftc.teamcode.qualifiers.qualifiersHardwareMap;
 
@@ -47,19 +48,19 @@ public class BlueCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -12, -40, Math.toRadians(-90)))
-                .splineTo(launchPose,Math.toRadians(45));
+                .splineTo(launchPose,Math.toRadians(40));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(40)))
                 .strafeToLinearHeading(new Vector2d(14,-20),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(14,-49), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(14,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 13, -40,Math.toRadians(-90)))
+        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 14, -40,Math.toRadians(-90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(45.5));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45.5)))
-                .splineTo(new Vector2d(15,-15),Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(13,-15),Math.toRadians(-90));
         // actions that need to happen on init; for instance, a claw tightening.
 
         //init loop
@@ -104,5 +105,7 @@ public class BlueCloseAuto extends LinearOpMode {
 
                 )
         );
+
+        LocalizationHelper.savePoseForTeleOp(drive);
     }
 }

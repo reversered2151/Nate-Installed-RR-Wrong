@@ -84,15 +84,19 @@ public class qualifiersTeleOp extends LinearOpMode {
 
         hardware.init(hardwareMap);
 
+        // Initialize Road Runner drive with starting pose from autonomous
+        // If no auto was run, defaults to (0, 0, 0)
+        drive = LocalizationHelper.initializeForTeleOp(hardwareMap);
 
         flywheel = hardware.flywheel;
         intake = hardware.intake;
         uptake = hardware.uptake;
         blocker = hardware.blocker;
-        fl = hardware.fl;
-        fr = hardware.fr;
-        bl = hardware.bl;
-        br = hardware.br;
+        // Use Road Runner's motor instances to avoid conflicts with odometry
+        fl = drive.leftFront;
+        fr = drive.rightFront;
+        bl = drive.leftBack;
+        br = drive.rightBack;
 
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
@@ -100,13 +104,6 @@ public class qualifiersTeleOp extends LinearOpMode {
                 RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
         imu.initialize(parameters);
-
-
-
-
-        // Initialize Road Runner drive with starting pose from autonomous
-        // If no auto was run, defaults to (0, 0, 0)
-        drive = LocalizationHelper.initializeForTeleOp(hardwareMap);
 
         telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
             PoseStorage.currentPose.position.x,
@@ -131,6 +128,14 @@ public class qualifiersTeleOp extends LinearOpMode {
                 // Far Red position
                 LocalizationHelper.resetPosition(drive, new Pose2d(56, -8, Math.toRadians(-225)));
                 telemetry.addData("Position Override", "Far Red (56, -8, -225°)");
+                telemetry.update();
+                sleep(300); // Debounce
+            }
+
+            if (gamepad1.dpad_up) {
+                // Blue Auto position
+                LocalizationHelper.resetPosition(drive, new Pose2d(13, -15, Math.toRadians(-90)));
+                telemetry.addData("Position Override", "Blue Auto (13, -15, -90)");
                 telemetry.update();
                 sleep(300); // Debounce
             }
@@ -172,6 +177,14 @@ public class qualifiersTeleOp extends LinearOpMode {
 
             // Get current pose
             Pose2d currentPose = LocalizationHelper.getCurrentPose(drive);
+
+            if (gamepad1.dpad_up) {
+                // Blue Auto position
+                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(-90)));
+                telemetry.addData("Center Override", "Blue Auto (0, 0, -90)");
+                telemetry.update();
+                sleep(300); // Debounce
+            }
 
             // Calculate distance to goal and target RPM
             double goalX = targetBlueGoal ? BLUE_GOAL_X : RED_GOAL_X;
@@ -233,10 +246,11 @@ public class qualifiersTeleOp extends LinearOpMode {
 
                 case SPINNING_UP:
                     // Step 2: Spin flywheel to target RPM
-                    spinFlywheelTo(targetRpm);
+//                    spinFlywheelTo(targetRpm);
+                    flywheel.setVelocity(1240);
 
                     // Step 3: Wait until flywheel reaches target speed
-                    if (isFlywheelAtSpeed(targetRpm)) {
+                    if (System.currentTimeMillis() - stateStartTime > 1000) {
                         shootingState = ShootingState.SHOOTING;
                         stateStartTime = System.currentTimeMillis();
                     }
@@ -257,7 +271,8 @@ public class qualifiersTeleOp extends LinearOpMode {
                     uptake.setPower(0.8);
 
                     // Keep flywheel at speed
-                    spinFlywheelTo(targetRpm);
+//                    spinFlywheelTo(targetRpm);
+                    flywheel.setVelocity(1240);
 
                     // Step 6: Hold for 1-2 seconds
                     if (System.currentTimeMillis() - stateStartTime >= SHOOT_DURATION_MS) {
@@ -270,8 +285,7 @@ public class qualifiersTeleOp extends LinearOpMode {
                     // Step 7: Stop flywheel and close blocker
                     stopFlywheel();
                     blocker.setPosition(BLOCKER_CLOSED);
-                    intake.setPower(0);
-                    uptake.setPower(0);
+
 
                     // Return to idle
                     shootingState = ShootingState.IDLE;
@@ -288,7 +302,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             telemetry.addData("Distance", "%.2f m", distanceToGoal);
             telemetry.addData("Target RPM", "%.0f", calculatedRpm);
             telemetry.addData("Actual RPM", "%.0f", ticksPerSecToRpm(flywheel.getVelocity()));
-            telemetry.addData("At Speed", isFlywheelAtSpeed(targetRpm) ? "YES" : "NO");
+            telemetry.addData("At Speed", isFlywheelAtSpeed(1237) ? "YES" : "NO");
             telemetry.addLine();
             telemetry.addLine("=== POSITION ===");
             telemetry.addData("X Position", currentPose.position.x);
