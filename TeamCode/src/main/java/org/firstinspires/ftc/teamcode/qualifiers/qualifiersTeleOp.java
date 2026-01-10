@@ -150,7 +150,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             }
             else if (gamepad1.y) {
                 // Close Blue position
-                LocalizationHelper.resetPosition(drive, new Pose2d(-50, -50, Math.toRadians(45)));
+                LocalizationHelper.resetPosition(drive, new Pose2d(-57, -42, Math.toRadians(45)));
                 telemetry.addData("Position Override", "Close Blue (-50, -50, 45°)");
                 telemetry.update();
                 sleep(300);
@@ -305,7 +305,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             // ========================================================================
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x;
-            double rx = (gamepad1.right_stick_x) * 0.75;
+            double rx = (gamepad1.right_stick_x)*.75;
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
@@ -341,7 +341,7 @@ public class qualifiersTeleOp extends LinearOpMode {
                 new Vector2d(-rotY, -rotX),  // Linear velocity (forward/strafe)
                 -rx                          // Angular velocity (rotation)
             );
-            drive.setDrivePowers(driveVelocity);
+//            drive.setDrivePowers(driveVelocity);
         }
     }
 

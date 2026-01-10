@@ -42,7 +42,7 @@ public class BlueCloseAuto extends LinearOpMode {
                 //shoot
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-12,-22),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12,-20),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90));
 
@@ -51,12 +51,12 @@ public class BlueCloseAuto extends LinearOpMode {
                 //shoot
 
         TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(13,-22),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(14,-20),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(14,-49), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(14,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 13, -40,Math.toRadians(-90)))
-                .splineTo(launchPose,Math.toRadians(45.5));
+                .strafeToLinearHeading(launchPose,Math.toRadians(45.5));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45.5)))
                 .splineTo(new Vector2d(15,-15),Math.toRadians(-90));

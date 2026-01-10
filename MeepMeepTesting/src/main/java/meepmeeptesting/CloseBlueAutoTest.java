@@ -49,7 +49,7 @@ public class CloseBlueAutoTest {
                 //Pick up artifacts
                 .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90))
-                .splineTo(launchPose,Math.toRadians(45.5))
+                .strafeToLinearHeading(launchPose,Math.toRadians(45.5))
                 .waitSeconds(4)
                 .build());
 
