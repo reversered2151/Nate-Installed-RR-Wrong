@@ -10,15 +10,15 @@ public class CloseBlueAutoTest {
 
     //Location for the robot to start
     //TODO Change if starting close/far and for red/blue
-    static double startX = -56;
-    static double startY = -43;
+    static double startX = -57;
+    static double startY = -42;
     static double startHeading = 45; //In degrees
     static Pose2d startPose = new Pose2d(startX,startY,Math.toRadians(startHeading));
 
     //Position and heading the robot needs to be to launch the artifact
     //TODO Find where bc right now the position is a complete guess
-    static double launchX = -16;
-    static double launchY = -16;
+    static double launchX = -24;
+    static double launchY = -24;
     static double launchHeading = Math.toRadians(360); //In degrees
     static Vector2d launchPose = new Vector2d(launchX,launchY);
 
@@ -43,13 +43,13 @@ public class CloseBlueAutoTest {
                 //Pick up artifacts
                 .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90))
-                .splineTo(launchPose,Math.toRadians(45))
+                .strafeToLinearHeading(launchPose,Math.toRadians(35))
                 .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(13,-22),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(14,-22),Math.toRadians(-90))
                 //Pick up artifacts
-                .strafeToLinearHeading(new Vector2d(13,-49), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(13,-40), Math.toRadians(-90))
-                .strafeToLinearHeading(launchPose,Math.toRadians(45.5))
+                .strafeToLinearHeading(new Vector2d(14,-49), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(14,-40), Math.toRadians(-90))
+                .splineTo(launchPose,Math.toRadians(45.5))
                 .waitSeconds(4)
                 .build());
 

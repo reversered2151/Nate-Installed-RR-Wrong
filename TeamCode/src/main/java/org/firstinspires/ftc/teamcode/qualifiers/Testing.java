@@ -70,11 +70,11 @@ public class Testing extends LinearOpMode {
 
             if (lb && !lb_prev) {
                 //targetRpm += 500;
-                targetRpm += 100;
+                targetRpm += 10;
             }
 
             if (rb && !rb_prev) {
-                targetRpm = 500;
+                targetRpm = 1000;
             }
 
             if (gamepad1.y) {

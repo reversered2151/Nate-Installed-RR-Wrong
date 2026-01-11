@@ -22,8 +22,8 @@ import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 public class qualifiersTeleOp extends LinearOpMode {
 
     // Formula: RPM = REGRESSION_SLOPE * distance_meters + REGRESSION_INTERCEPT
-    private static final double REGRESSION_SLOPE = 200.0;      // TODO: Update with actual slope from regression
-    private static final double REGRESSION_INTERCEPT = 1000.0; // TODO: Update with actual intercept from regression
+    private static final double REGRESSION_SLOPE = 439.42018;
+    private static final double REGRESSION_INTERCEPT = 764.10156;
 
     // Goal positions on field (in inches, measured from field center)
     private static final double BLUE_GOAL_X = -60.0;
