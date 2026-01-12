@@ -3,16 +3,11 @@ package org.firstinspires.ftc.teamcode.qualifiers;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.PoseVelocity2d;
-import com.acmerobotics.roadrunner.Vector2d;
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.LocalizationHelper;
 import org.firstinspires.ftc.teamcode.PoseStorage;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
@@ -63,6 +58,7 @@ public class qualifiersTeleOp extends LinearOpMode {
     private boolean prevRightBumper = false;
     private boolean prevDpadLeft = false;
     private boolean prevB = false;
+    private boolean prevLeftBumper = false;
 
     qualifiersHardwareMap hardware = new qualifiersHardwareMap();
     MecanumDrive drive;
@@ -84,7 +80,7 @@ public class qualifiersTeleOp extends LinearOpMode {
 
         hardware.init(hardwareMap);
 
-        // Initialize Road Runner drive with starting pose from autonomous
+        // Road Runner drive with starting pose from autonomous
         // If no auto was run, defaults to (0, 0, 0)
         drive = LocalizationHelper.initializeForTeleOp(hardwareMap);
 
@@ -97,13 +93,6 @@ public class qualifiersTeleOp extends LinearOpMode {
         fr = drive.rightFront;
         bl = drive.leftBack;
         br = drive.rightBack;
-
-        IMU imu = hardwareMap.get(IMU.class, "imu");
-        // Adjust the orientation parameters to match your robot
-        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
-        imu.initialize(parameters);
 
         telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
             PoseStorage.currentPose.position.x,
@@ -157,6 +146,13 @@ public class qualifiersTeleOp extends LinearOpMode {
             }
         }
 
+        // Initialize teleop - close blocker and reset heading
+        blocker.setPosition(BLOCKER_CLOSED);
+        LocalizationHelper.resetPosition(drive, new Pose2d(
+            PoseStorage.currentPose.position.x,
+            PoseStorage.currentPose.position.y,
+            0
+        ));
 
         while (opModeIsActive()){
 
@@ -169,15 +165,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 // Blue Auto position
                 LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(-90)));
-                telemetry.addData("Center Override", "Blue (0, 0, -90)");
-                telemetry.update();
-                sleep(300); // Debounce
-            }
-
-            if (gamepad1.dpad_down) {
-                // Blue Auto position
-                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(90)));
-                telemetry.addData("Center Override", "Red (0, 0, 90)");
+                telemetry.addData("Center Override", "Blue Auto (0, 0, -90)");
                 telemetry.update();
                 sleep(300); // Debounce
             }
@@ -193,6 +181,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             // ========================================================================
 
             boolean rightBumper = gamepad1.right_bumper;
+            boolean leftBumper = gamepad1.left_bumper;
             boolean bButton = gamepad1.b;
             boolean dpadLeft = gamepad1.dpad_left;
 
@@ -201,6 +190,19 @@ public class qualifiersTeleOp extends LinearOpMode {
                 targetBlueGoal = !targetBlueGoal;
             }
             prevDpadLeft = dpadLeft;
+
+            // LEFT BUMPER: Toggle intake and uptake on/off
+            if (leftBumper && !prevLeftBumper && shootingState == ShootingState.IDLE) {
+                // Toggle intake/uptake
+                if (intake.getPower() == 0) {
+                    intake.setPower(0.8);
+                    uptake.setPower(0.8);
+                } else {
+                    intake.setPower(0);
+                    uptake.setPower(0);
+                }
+            }
+            prevLeftBumper = leftBumper;
 
             // RIGHT BUMPER: Start shooting sequence
             if (rightBumper && !prevRightBumper && shootingState == ShootingState.IDLE) {
@@ -306,10 +308,9 @@ public class qualifiersTeleOp extends LinearOpMode {
             telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
             telemetry.addLine();
             telemetry.addLine("=== CONTROLS ===");
-            telemetry.addLine("RB: Shoot | B: Emergency Stop");
-            telemetry.addLine("D-Pad Left: Toggle Goal");
-            telemetry.addLine("D-Pad Up: Blue Reset Pos");
-            telemetry.addLine("D-Pad Down: Red Reset Pos");
+            telemetry.addLine("LB: Intake Toggle | RB: Shoot");
+            telemetry.addLine("B: Emergency Stop | D-Pad Left: Toggle Goal");
+            telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
             telemetry.update();
 
             // ========================================================================
@@ -323,10 +324,12 @@ public class qualifiersTeleOp extends LinearOpMode {
             // it can be freely changed based on preference.
             // The equivalent button is start on Xbox-style controllers.
             if (gamepad1.right_stick_button && gamepad1.left_stick_button) {
-                imu.resetYaw();
+                // Reset heading to current pose's heading (effectively resets field-centric reference)
+                LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
             }
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            // Use Road Runner's heading for field-centric drive
+            double botHeading = currentPose.heading.toDouble();
 
             // Rotate the movement direction counter to the bot's rotation
             double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
@@ -347,13 +350,6 @@ public class qualifiersTeleOp extends LinearOpMode {
             bl.setPower(blPower);
             fr.setPower(frPower);
             br.setPower(brPower);
-            
-            // Use Road Runner's setDrivePowers to maintain localization
-            PoseVelocity2d driveVelocity = new PoseVelocity2d(
-                new Vector2d(-rotY, -rotX),  // Linear velocity (forward/strafe)
-                -rx                          // Angular velocity (rotation)
-            );
-//            drive.setDrivePowers(driveVelocity);
         }
     }
 

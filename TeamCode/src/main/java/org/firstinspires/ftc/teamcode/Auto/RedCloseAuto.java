@@ -23,7 +23,7 @@ public class RedCloseAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         Pose2d initialPose = new Pose2d(-56, 43, Math.toRadians(-45));
-        MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
+        MecanumDrive drive = LocalizationHelper.initializeForAuto(hardwareMap, initialPose);
         mechanisms m = new mechanisms(hardwareMap);
 
         TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
@@ -48,7 +48,7 @@ public class RedCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(launchPose,Math.toRadians(-45));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(-45)))
-                .strafeToLinearHeading(new Vector2d(13,-15),Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(13,15),Math.toRadians(90));
         // actions that need to happen on init; for instance, a claw tightening.
 
         //init loop
