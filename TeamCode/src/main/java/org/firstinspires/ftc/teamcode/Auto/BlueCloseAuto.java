@@ -34,7 +34,7 @@ public class BlueCloseAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(-57, -42, Math.toRadians(45));
+        Pose2d initialPose = new Pose2d(-56, -43, Math.toRadians(45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
         mechanisms m = new mechanisms(hardwareMap);
 
@@ -51,7 +51,7 @@ public class BlueCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(40)))
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
                 .strafeToLinearHeading(new Vector2d(14,-20),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(14,-49), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(14,-40), Math.toRadians(-90));
@@ -59,7 +59,7 @@ public class BlueCloseAuto extends LinearOpMode {
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 14, -40,Math.toRadians(-90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));
 
-        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45.5)))
+        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
                 .strafeToLinearHeading(new Vector2d(13,-15),Math.toRadians(-90));
         // actions that need to happen on init; for instance, a claw tightening.
 

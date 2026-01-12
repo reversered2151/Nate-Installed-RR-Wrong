@@ -3,6 +3,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.SleepAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -15,34 +16,39 @@ import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 @Config
 @Autonomous(name = "Close Red Auto", group = "Autonomous")
 public class RedCloseAuto extends LinearOpMode {
-    static double launchX = -16;
-    static double launchY = 16;
+    static double launchX = -24;
+    static double launchY = 24;
     static Vector2d launchPose = new Vector2d(launchX,launchY);
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(-50, 50, Math.toRadians(45));
+        Pose2d initialPose = new Pose2d(-56, 43, Math.toRadians(-45));
         MecanumDrive drive = new MecanumDrive(hardwareMap, initialPose);
-        //Claw claw = new Claw(hardwareMap);
-        //Lift lift = new Lift(hardwareMap);
+        mechanisms m = new mechanisms(hardwareMap);
 
-        TrajectoryActionBuilder tab1 = drive.actionBuilder(initialPose)
-                .lineToX(launchX)
-                //Scan for which artifacts and shoot (waitSeconds is placeholder for shooting)
-                .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(-12,32),Math.toRadians(-270))
-                //Pick up artifacts
-                .strafeToLinearHeading(new Vector2d(-12,52), Math.toRadians(-270))
-                .strafeToLinearHeading(new Vector2d(-12,40), Math.toRadians(-270))
-                .splineTo(launchPose,Math.toRadians(135))
-                .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(12,32),Math.toRadians(-270))
-                ///Pick up artifacts
-                .strafeToLinearHeading(new Vector2d(12,52), Math.toRadians(-270))
-                .strafeToLinearHeading(new Vector2d(12,40), Math.toRadians(-270))
-                .splineTo(launchPose,Math.toRadians(135))
-                .waitSeconds(4);
+        TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
+                .strafeToLinearHeading(launchPose,Math.toRadians(-45));
+        //shoot
 
+        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(-45)))
+                .strafeToLinearHeading(new Vector2d(-12,20),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-12,48), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(-12,40), Math.toRadians(90));
+
+        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -12, 40, Math.toRadians(90)))
+                .strafeToLinearHeading(launchPose,Math.toRadians(-45));
+        //shoot
+
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(-45)))
+                .strafeToLinearHeading(new Vector2d(14,20),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(14,49), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(14,40), Math.toRadians(90));
+
+        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 14, 40,Math.toRadians(90)))
+                .strafeToLinearHeading(launchPose,Math.toRadians(-45));
+
+        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(-45)))
+                .strafeToLinearHeading(new Vector2d(13,-15),Math.toRadians(90));
         // actions that need to happen on init; for instance, a claw tightening.
 
         //init loop
@@ -56,15 +62,38 @@ public class RedCloseAuto extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Action trajectoryActionChosen;
-        trajectoryActionChosen = tab1.build();
+        Action shootFirst = ShootPreload.build();
+        Action intakeFirst = IntakeFirstStack.build();
+        Action shootSecond = ShootFirstStack.build();
+        Action intakeSecond = IntakeSecondStack.build();
+        Action shootThird = ShootSecondStack.build();
+        Action Leave = leave.build();
+
         Actions.runBlocking(
                 new SequentialAction(
-                        trajectoryActionChosen
+                        m.blockerClose(),
+                        shootFirst,
+                        m.shootingSequence,
+                        m.blockerClose(),
+                        new SleepAction(.5),
+
+                        intakeFirst,
+                        shootSecond,
+                        m.shootingSequence2,
+                        m.blockerClose(),
+                        new SleepAction(.5),
+
+                        intakeSecond,
+                        shootThird,
+                        m.shootingSequence3,
+                        m.blockerClose(),
+                        new SleepAction(.5),
+
+                        Leave
+
                 )
         );
 
-        // Save final pose for TeleOp handoff
         LocalizationHelper.savePoseForTeleOp(drive);
     }
 }

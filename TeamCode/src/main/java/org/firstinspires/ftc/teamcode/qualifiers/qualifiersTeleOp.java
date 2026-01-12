@@ -111,11 +111,10 @@ public class qualifiersTeleOp extends LinearOpMode {
             Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
         telemetry.addLine();
         telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
-        telemetry.addLine("A: Far Red (56, -8, -225°)");
-        telemetry.addLine("B: Close Red (-50, 50, -45°)");
-        telemetry.addLine("X: Far Blue (56, -8, -225°)");
-        telemetry.addLine("Y: Close Blue (-50, -50, 45°)");
-        telemetry.addLine("DPAD_DOWN: Reset to (0, 0, 0)");
+        telemetry.addLine("DPAD_UP: Blue Auto");
+        telemetry.addLine("DPAD_DOWN: Red Auto");
+        telemetry.addLine("Y: Blue Goal");
+        telemetry.addLine("A: Red Goal");
         telemetry.addLine();
         telemetry.addData("Status", "Ready - Press buttons to override position");
         telemetry.update();
@@ -124,13 +123,6 @@ public class qualifiersTeleOp extends LinearOpMode {
 
         // Manual position selection during init
         while (!isStarted() && !isStopRequested()) {
-            if (gamepad1.a) {
-                // Far Red position
-                LocalizationHelper.resetPosition(drive, new Pose2d(56, -8, Math.toRadians(-225)));
-                telemetry.addData("Position Override", "Far Red (56, -8, -225°)");
-                telemetry.update();
-                sleep(300); // Debounce
-            }
 
             if (gamepad1.dpad_up) {
                 // Blue Auto position
@@ -139,33 +131,29 @@ public class qualifiersTeleOp extends LinearOpMode {
                 telemetry.update();
                 sleep(300); // Debounce
             }
-            else if (gamepad1.b) {
-                // Close Red position
-                LocalizationHelper.resetPosition(drive, new Pose2d(-50, 50, Math.toRadians(-45)));
-                telemetry.addData("Position Override", "Close Red (-50, 50, -45°)");
-                telemetry.update();
-                sleep(300);
-            }
-            else if (gamepad1.x) {
-                // Far Blue position
-                LocalizationHelper.resetPosition(drive, new Pose2d(56, -8, Math.toRadians(-225)));
-                telemetry.addData("Position Override", "Far Blue (56, -8, -225°)");
-                telemetry.update();
-                sleep(300);
-            }
-            else if (gamepad1.y) {
-                // Close Blue position
-                LocalizationHelper.resetPosition(drive, new Pose2d(-57, -42, Math.toRadians(45)));
-                telemetry.addData("Position Override", "Close Blue (-50, -50, 45°)");
-                telemetry.update();
-                sleep(300);
-            }
+
             else if (gamepad1.dpad_down) {
                 // Reset to origin
-                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, 0));
-                telemetry.addData("Position Override", "Origin (0, 0, 0)");
+                LocalizationHelper.resetPosition(drive, new Pose2d(13, 15, Math.toRadians(90)));
+                telemetry.addData("Position Override", "Red Auto (13, 15, 90)");
                 telemetry.update();
                 sleep(300);
+            }
+
+            else if (gamepad1.y) {
+                // Close Blue position
+                LocalizationHelper.resetPosition(drive, new Pose2d(-56, -43, Math.toRadians(45)));
+                telemetry.addData("Position Override", "Blue Goal (-56, -43, 45°)");
+                telemetry.update();
+                sleep(300);
+            }
+
+            else if (gamepad1.a) {
+                // Far Red position
+                LocalizationHelper.resetPosition(drive, new Pose2d(-56, 43, Math.toRadians(-45)));
+                telemetry.addData("Position Override", "Red Goal (-56, 43, -45°)");
+                telemetry.update();
+                sleep(300); // Debounce
             }
         }
 
@@ -181,7 +169,15 @@ public class qualifiersTeleOp extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 // Blue Auto position
                 LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(-90)));
-                telemetry.addData("Center Override", "Blue Auto (0, 0, -90)");
+                telemetry.addData("Center Override", "Blue (0, 0, -90)");
+                telemetry.update();
+                sleep(300); // Debounce
+            }
+
+            if (gamepad1.dpad_down) {
+                // Blue Auto position
+                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(90)));
+                telemetry.addData("Center Override", "Red (0, 0, 90)");
                 telemetry.update();
                 sleep(300); // Debounce
             }
@@ -247,7 +243,7 @@ public class qualifiersTeleOp extends LinearOpMode {
                 case SPINNING_UP:
                     // Step 2: Spin flywheel to target RPM
 //                    spinFlywheelTo(targetRpm);
-                    flywheel.setVelocity(1240);
+                    flywheel.setVelocity(targetRpm);
 
                     // Step 3: Wait until flywheel reaches target speed
                     if (System.currentTimeMillis() - stateStartTime > 1000) {
@@ -272,7 +268,7 @@ public class qualifiersTeleOp extends LinearOpMode {
 
                     // Keep flywheel at speed
 //                    spinFlywheelTo(targetRpm);
-                    flywheel.setVelocity(1240);
+                    flywheel.setVelocity(targetRpm);
 
                     // Step 6: Hold for 1-2 seconds
                     if (System.currentTimeMillis() - stateStartTime >= SHOOT_DURATION_MS) {
@@ -302,7 +298,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             telemetry.addData("Distance", "%.2f m", distanceToGoal);
             telemetry.addData("Target RPM", "%.0f", calculatedRpm);
             telemetry.addData("Actual RPM", "%.0f", ticksPerSecToRpm(flywheel.getVelocity()));
-            telemetry.addData("At Speed", isFlywheelAtSpeed(1237) ? "YES" : "NO");
+            telemetry.addData("At Speed", isFlywheelAtSpeed(targetRpm) ? "YES" : "NO");
             telemetry.addLine();
             telemetry.addLine("=== POSITION ===");
             telemetry.addData("X Position", currentPose.position.x);
@@ -312,6 +308,8 @@ public class qualifiersTeleOp extends LinearOpMode {
             telemetry.addLine("=== CONTROLS ===");
             telemetry.addLine("RB: Shoot | B: Emergency Stop");
             telemetry.addLine("D-Pad Left: Toggle Goal");
+            telemetry.addLine("D-Pad Up: Blue Reset Pos");
+            telemetry.addLine("D-Pad Down: Red Reset Pos");
             telemetry.update();
 
             // ========================================================================

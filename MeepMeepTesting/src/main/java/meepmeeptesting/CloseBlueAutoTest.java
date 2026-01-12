@@ -10,8 +10,8 @@ public class CloseBlueAutoTest {
 
     //Location for the robot to start
     //TODO Change if starting close/far and for red/blue
-    static double startX = -57;
-    static double startY = -42;
+    static double startX = -56;
+    static double startY = -43;
     static double startHeading = 45; //In degrees
     static Pose2d startPose = new Pose2d(startX,startY,Math.toRadians(startHeading));
 
@@ -36,21 +36,22 @@ public class CloseBlueAutoTest {
 
         myBot.runAction(myBot.getDrive().actionBuilder(startPose)
                 .waitSeconds(0)
-                .splineTo(launchPose,Math.toRadians(45))
+                .strafeToLinearHeading(launchPose,Math.toRadians(45))
                 //Shoot (waitSeconds is placeholder for shooting)
                 .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(-12,-22),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-12,-20),Math.toRadians(-90))
                 //Pick up artifacts
                 .strafeToLinearHeading(new Vector2d(-12,-48), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(-12,-40), Math.toRadians(-90))
-                .strafeToLinearHeading(launchPose,Math.toRadians(35))
+                .strafeToLinearHeading(launchPose,Math.toRadians(45))
                 .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(14,-22),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(14,-20),Math.toRadians(-90))
                 //Pick up artifacts
                 .strafeToLinearHeading(new Vector2d(14,-49), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(14,-40), Math.toRadians(-90))
-                .splineTo(launchPose,Math.toRadians(45.5))
+                .strafeToLinearHeading(launchPose,Math.toRadians(45))
                 .waitSeconds(4)
+                .strafeToLinearHeading(new Vector2d(13,-15),Math.toRadians(-90))
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)

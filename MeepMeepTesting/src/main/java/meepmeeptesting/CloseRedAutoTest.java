@@ -11,16 +11,15 @@ public class CloseRedAutoTest {
 
     //Location for the robot to start
     //TODO Change if starting close/far and for red/blue
-    static double startX = -50;
-    static double startY = 50;
+    static double startX = -56;
+    static double startY = 43;
     static double startHeading = -45; //In degrees
     static Pose2d startPose = new Pose2d(startX,startY,Math.toRadians(startHeading));
 
     //Position and heading the robot needs to be to launch the artifact
     //TODO Find where bc right now the position is a complete guess
-    static double launchX = -16;
-    static double launchY = 16;
-    static double launchHeading = Math.toRadians(180); //In degrees
+    static double launchX = -24;
+    static double launchY = 24;
     static Vector2d launchPose = new Vector2d(launchX,launchY);
 
     public static void main(String[] args) {
@@ -36,22 +35,24 @@ public class CloseRedAutoTest {
                 .build();
 
         myBot.runAction(myBot.getDrive().actionBuilder(startPose)
-                .lineToX(launchX)
-                //Scan for which artifacts and shoot (waitSeconds is placeholder for shooting)
-                .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(-12,32),Math.toRadians(-270))
-                //Pick up artifacts
-                .strafeToLinearHeading(new Vector2d(-12,52), Math.toRadians(-270))
-                .strafeToLinearHeading(new Vector2d(-12,40), Math.toRadians(-270))
-                .splineTo(launchPose,Math.toRadians(135))
-                .waitSeconds(4)
-                .strafeToLinearHeading(new Vector2d(12,32),Math.toRadians(-270))
-                ///Pick up artifacts
-                .strafeToLinearHeading(new Vector2d(12,52), Math.toRadians(-270))
-                .strafeToLinearHeading(new Vector2d(12,40), Math.toRadians(-270))
-                .splineTo(launchPose,Math.toRadians(135))
-                .waitSeconds(4)
-                .build());
+                        .waitSeconds(0)
+                        .strafeToLinearHeading(launchPose,Math.toRadians(-45))
+                        //Shoot (waitSeconds is placeholder for shooting)
+                        .waitSeconds(4)
+                        .strafeToLinearHeading(new Vector2d(-12,20),Math.toRadians(90))
+                        //Pick up artifacts
+                        .strafeToLinearHeading(new Vector2d(-12,48), Math.toRadians(90))
+                        .strafeToLinearHeading(new Vector2d(-12,40), Math.toRadians(90))
+                        .strafeToLinearHeading(launchPose,Math.toRadians(-45))
+                        .waitSeconds(4)
+                        .strafeToLinearHeading(new Vector2d(14,20),Math.toRadians(90))
+                        //Pick up artifacts
+                        .strafeToLinearHeading(new Vector2d(14,49), Math.toRadians(90))
+                        .strafeToLinearHeading(new Vector2d(14,40), Math.toRadians(90))
+                        .strafeToLinearHeading(launchPose,Math.toRadians(-45))
+                        .waitSeconds(4)
+                        .strafeToLinearHeading(new Vector2d(13,15),Math.toRadians(90))
+                        .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_DECODE_OFFICIAL)
                 .setDarkMode(true)
