@@ -165,7 +165,15 @@ public class qualifiersTeleOp extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 // Blue Auto position
                 LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(-90)));
-                telemetry.addData("Center Override", "Blue Auto (0, 0, -90)");
+                telemetry.addData("Blue Center Override", "(0, 0, -90)");
+                telemetry.update();
+                sleep(300); // Debounce
+            }
+
+            if (gamepad1.dpad_down) {
+                // Blue Auto position
+                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(90)));
+                telemetry.addData("Red Center Override", "(0, 0, 90)");
                 telemetry.update();
                 sleep(300); // Debounce
             }
