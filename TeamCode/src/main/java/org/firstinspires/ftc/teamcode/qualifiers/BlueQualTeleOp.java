@@ -31,7 +31,7 @@ public class BlueQualTeleOp extends LinearOpMode {
     private static final double TICKS_PER_REV = 28.0;
 
     // Shooting timing
-    private static final long SHOOT_DURATION_MS = 2000;  // Hold shooting for 1.5 seconds
+    private static final long SHOOT_DURATION_MS = 2000;  // Hold shooting for 2 seconds
 
     // Servo positions (from mechanisms.java)
     private static final double BLOCKER_OPEN = 0.6;
