@@ -13,8 +13,8 @@ import org.firstinspires.ftc.teamcode.PoseStorage;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
 
-@TeleOp(name = "TeleOp", group = "qualifiers")
-public class qualifiersTeleOp extends LinearOpMode {
+@TeleOp(name = "BlueTeleOp", group = "qualifiers")
+public class BlueQualTeleOp extends LinearOpMode {
 
     // Formula: RPM = REGRESSION_SLOPE * distance_meters + REGRESSION_INTERCEPT
     private static final double REGRESSION_SLOPE = 439.42018;
@@ -23,8 +23,6 @@ public class qualifiersTeleOp extends LinearOpMode {
     // Goal positions on field (in inches, measured from field center)
     private static final double BLUE_GOAL_X = -60.0;
     private static final double BLUE_GOAL_Y = -60.0;
-    private static final double RED_GOAL_X = 60.0;
-    private static final double RED_GOAL_Y = 60.0;
 
     // Flywheel limits
     private static final double MIN_RPM = 500.0;
@@ -33,7 +31,7 @@ public class qualifiersTeleOp extends LinearOpMode {
     private static final double TICKS_PER_REV = 28.0;
 
     // Shooting timing
-    private static final long SHOOT_DURATION_MS = 1500;  // Hold shooting for 1.5 seconds
+    private static final long SHOOT_DURATION_MS = 2000;  // Hold shooting for 1.5 seconds
 
     // Servo positions (from mechanisms.java)
     private static final double BLOCKER_OPEN = 0.6;
@@ -52,7 +50,6 @@ public class qualifiersTeleOp extends LinearOpMode {
     private ShootingState shootingState = ShootingState.IDLE;
     private long stateStartTime = 0;
     private double targetRpm = 0.0;
-    private boolean targetBlueGoal = true;  // true = blue, false = red
 
     // Button debouncing
     private boolean prevRightBumper = false;
@@ -101,9 +98,7 @@ public class qualifiersTeleOp extends LinearOpMode {
         telemetry.addLine();
         telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
         telemetry.addLine("DPAD_UP: Blue Auto");
-        telemetry.addLine("DPAD_DOWN: Red Auto");
-        telemetry.addLine("Y: Blue Goal");
-        telemetry.addLine("A: Red Goal");
+        telemetry.addLine("DPAD_DOWN: Blue Goal");
         telemetry.addLine();
         telemetry.addData("Status", "Ready - Press buttons to override position");
         telemetry.update();
@@ -122,27 +117,11 @@ public class qualifiersTeleOp extends LinearOpMode {
             }
 
             else if (gamepad1.dpad_down) {
-                // Reset to origin
-                LocalizationHelper.resetPosition(drive, new Pose2d(13, 15, Math.toRadians(90)));
-                telemetry.addData("Position Override", "Red Auto (13, 15, 90)");
-                telemetry.update();
-                sleep(300);
-            }
-
-            else if (gamepad1.y) {
-                // Close Blue position
+                // Blue Goal
                 LocalizationHelper.resetPosition(drive, new Pose2d(-56, -43, Math.toRadians(45)));
                 telemetry.addData("Position Override", "Blue Goal (-56, -43, 45°)");
                 telemetry.update();
                 sleep(300);
-            }
-
-            else if (gamepad1.a) {
-                // Far Red position
-                LocalizationHelper.resetPosition(drive, new Pose2d(-56, 43, Math.toRadians(-45)));
-                telemetry.addData("Position Override", "Red Goal (-56, 43, -45°)");
-                telemetry.update();
-                sleep(300); // Debounce
             }
         }
 
@@ -170,17 +149,9 @@ public class qualifiersTeleOp extends LinearOpMode {
                 sleep(300); // Debounce
             }
 
-            if (gamepad1.dpad_down) {
-                // Blue Auto position
-                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(90)));
-                telemetry.addData("Red Center Override", "(0, 0, 90)");
-                telemetry.update();
-                sleep(300); // Debounce
-            }
-
             // Calculate distance to goal and target RPM
-            double goalX = targetBlueGoal ? BLUE_GOAL_X : RED_GOAL_X;
-            double goalY = targetBlueGoal ? BLUE_GOAL_Y : RED_GOAL_Y;
+            double goalX = BLUE_GOAL_X;
+            double goalY = BLUE_GOAL_Y;
             double distanceToGoal = LocalizationHelper.getDistanceToTargetMeters(drive, goalX, goalY);
             double calculatedRpm = computeRPMLinearRegression(distanceToGoal);
 
@@ -191,13 +162,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             boolean rightBumper = gamepad1.right_bumper;
             boolean leftBumper = gamepad1.left_bumper;
             boolean bButton = gamepad1.b;
-            boolean dpadLeft = gamepad1.dpad_left;
 
-            // D-PAD LEFT: Toggle Blue/Red Goal
-            if (dpadLeft && !prevDpadLeft) {
-                targetBlueGoal = !targetBlueGoal;
-            }
-            prevDpadLeft = dpadLeft;
 
             // LEFT BUMPER: Toggle intake and uptake on/off
             if (leftBumper && !prevLeftBumper && shootingState == ShootingState.IDLE) {
@@ -273,8 +238,8 @@ public class qualifiersTeleOp extends LinearOpMode {
                     blocker.setPosition(BLOCKER_OPEN);
 
                     // Step 5: Restart intake and uptake
-                    intake.setPower(0.8);
-                    uptake.setPower(0.8);
+                    intake.setPower(0.7);
+                    uptake.setPower(0.7);
 
                     // Keep flywheel at speed
 //                    spinFlywheelTo(targetRpm);
@@ -304,7 +269,6 @@ public class qualifiersTeleOp extends LinearOpMode {
 
             telemetry.addLine("=== SHOOTING STATUS ===");
             telemetry.addData("State", shootingState.toString());
-            telemetry.addData("Goal", targetBlueGoal ? "BLUE" : "RED");
             telemetry.addData("Distance", "%.2f m", distanceToGoal);
             telemetry.addData("Target RPM", "%.0f", calculatedRpm);
             telemetry.addData("Actual RPM", "%.0f", ticksPerSecToRpm(flywheel.getVelocity()));
@@ -317,7 +281,7 @@ public class qualifiersTeleOp extends LinearOpMode {
             telemetry.addLine();
             telemetry.addLine("=== CONTROLS ===");
             telemetry.addLine("LB: Intake Toggle | RB: Shoot");
-            telemetry.addLine("B: Emergency Stop | D-Pad Left: Toggle Goal");
+            telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
             telemetry.update();
 
