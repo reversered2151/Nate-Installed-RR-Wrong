@@ -159,4 +159,44 @@ public class LocalizationHelper {
     public static void savePoseForTeleOp(MecanumDrive drive) {
         PoseStorage.currentPose = drive.localizer.getPose();
     }
+
+    /**
+     * Calculate the angle from the robot's current position to a target point
+     * This is the absolute field angle (not relative to robot heading)
+     *
+     * @param drive The MecanumDrive instance
+     * @param targetX Target X coordinate (inches)
+     * @param targetY Target Y coordinate (inches)
+     * @return Angle to target in radians (-π to π), where 0 is facing +X axis
+     */
+    public static double getAngleToTarget(MecanumDrive drive, double targetX, double targetY) {
+        Pose2d currentPose = drive.localizer.getPose();
+        double dx = targetX - currentPose.position.x;
+        double dy = targetY - currentPose.position.y;
+        return Math.atan2(dy, dx);
+    }
+
+    /**
+     * Calculate the angle error between robot's current heading and the target
+     * Properly handles angle wrapping to ensure shortest rotation path
+     *
+     * @param drive The MecanumDrive instance
+     * @param targetX Target X coordinate (inches)
+     * @param targetY Target Y coordinate (inches)
+     * @return Angle error in radians (-π to π), positive = turn counterclockwise
+     */
+    public static double getAngleErrorToTarget(MecanumDrive drive, double targetX, double targetY) {
+        Pose2d currentPose = drive.localizer.getPose();
+        double targetAngle = getAngleToTarget(drive, targetX, targetY);
+        double currentHeading = currentPose.heading.toDouble();
+
+        // Calculate error with proper wrapping
+        double error = targetAngle - currentHeading;
+
+        // Normalize to [-π, π] for shortest path
+        while (error > Math.PI) error -= 2 * Math.PI;
+        while (error < -Math.PI) error += 2 * Math.PI;
+
+        return error;
+    }
 }
