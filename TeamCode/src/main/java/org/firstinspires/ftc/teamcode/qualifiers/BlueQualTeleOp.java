@@ -301,7 +301,7 @@ public class BlueQualTeleOp extends LinearOpMode {
             telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
             telemetry.addLine("Y: Rotate to Goal");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
-            telemetry.addData("Rotating", isRotatingToGoal ? "YES" : "NO");
+            telemetry.addData("Heading Lock", isRotatingToGoal ? "YES" : "NO");
             if (isRotatingToGoal) {
                 double currentHeading = currentPose.heading.toDouble();
                 double angleError = targetRotationAngle - currentHeading;

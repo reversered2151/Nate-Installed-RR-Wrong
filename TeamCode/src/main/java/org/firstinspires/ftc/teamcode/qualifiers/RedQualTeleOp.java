@@ -295,7 +295,7 @@ public class RedQualTeleOp extends LinearOpMode {
             telemetry.addLine("=== CONTROLS ===");
             telemetry.addLine("LB: Intake Toggle | RB: Shoot");
             telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
-            telemetry.addLine("Y: Rotate to Goal");
+            telemetry.addLine("Y: Heading Lock");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
             telemetry.addData("Rotating", isRotatingToGoal ? "YES" : "NO");
             if (isRotatingToGoal) {
