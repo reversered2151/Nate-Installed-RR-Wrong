@@ -55,6 +55,13 @@ public class RedQualTeleOp extends LinearOpMode {
     private boolean prevRightBumper = false;
     private boolean prevB = false;
     private boolean prevLeftBumper = false;
+    private boolean prevY = false;
+
+    // One-time rotation to goal
+    private boolean isRotatingToGoal = false;
+    private double targetRotationAngle = 0.0;
+    private static final double ROTATION_KP = 0.8;  // Proportional gain for rotation
+    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(2.0);  // 2 degree tolerance
 
     qualifiersHardwareMap hardware = new qualifiersHardwareMap();
     MecanumDrive drive;
@@ -160,7 +167,15 @@ public class RedQualTeleOp extends LinearOpMode {
             boolean rightBumper = gamepad1.right_bumper;
             boolean leftBumper = gamepad1.left_bumper;
             boolean bButton = gamepad1.b;
+            boolean yButton = gamepad1.y;
 
+            // Y BUTTON: Start one-time rotation to goal
+            if (yButton && !prevY) {
+                // Calculate the target angle to face the goal
+                targetRotationAngle = LocalizationHelper.getAngleToTarget(drive, goalX, goalY);
+                isRotatingToGoal = true;
+            }
+            prevY = yButton;
 
             // LEFT BUMPER: Toggle intake and uptake on/off
             if (leftBumper && !prevLeftBumper && shootingState == ShootingState.IDLE) {
@@ -280,7 +295,17 @@ public class RedQualTeleOp extends LinearOpMode {
             telemetry.addLine("=== CONTROLS ===");
             telemetry.addLine("LB: Intake Toggle | RB: Shoot");
             telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
+            telemetry.addLine("Y: Rotate to Goal");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
+            telemetry.addData("Rotating", isRotatingToGoal ? "YES" : "NO");
+            if (isRotatingToGoal) {
+                double currentHeading = currentPose.heading.toDouble();
+                double angleError = targetRotationAngle - currentHeading;
+                // Normalize to [-π, π]
+                while (angleError > Math.PI) angleError -= 2 * Math.PI;
+                while (angleError < -Math.PI) angleError += 2 * Math.PI;
+                telemetry.addData("Angle Error", "%.1f deg", Math.toDegrees(angleError));
+            }
             telemetry.update();
 
             // ========================================================================
@@ -289,6 +314,33 @@ public class RedQualTeleOp extends LinearOpMode {
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x;
             double rx = (gamepad1.right_stick_x)*.75;
+
+            // One-time rotation to goal
+            if (isRotatingToGoal) {
+                double currentHeading = currentPose.heading.toDouble();
+                double angleError = targetRotationAngle - currentHeading;
+
+                // Normalize to [-π, π] for shortest path
+                while (angleError > Math.PI) angleError -= 2 * Math.PI;
+                while (angleError < -Math.PI) angleError += 2 * Math.PI;
+
+                // If within tolerance, stop rotating
+                if (Math.abs(angleError) < ROTATION_TOLERANCE_RAD) {
+                    isRotatingToGoal = false;
+                    rx = 0;
+                } else {
+                    // Apply proportional control to rotation
+                    rx = angleError * ROTATION_KP;
+                    // Clamp to reasonable values
+                    rx = Math.max(-0.75, Math.min(0.75, rx));
+                }
+
+                // Driver can still override with right stick
+                if (Math.abs(gamepad1.right_stick_x) > 0.1) {
+                    isRotatingToGoal = false;
+                    rx = (gamepad1.right_stick_x) * 0.75;
+                }
+            }
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.

@@ -58,8 +58,9 @@ public class BlueQualTeleOp extends LinearOpMode {
     private boolean prevLeftBumper = false;
     private boolean prevY = false;
 
-    // Auto-rotation to goal
-    private boolean autoRotatingToGoal = false;
+    // One-time rotation to goal
+    private boolean isRotatingToGoal = false;
+    private double targetRotationAngle = 0.0;
     private static final double ROTATION_KP = 0.8;  // Proportional gain for rotation
     private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(2.0);  // 2 degree tolerance
 
@@ -172,9 +173,11 @@ public class BlueQualTeleOp extends LinearOpMode {
             boolean yButton = gamepad1.y;
 
 
-            // Y BUTTON: Toggle auto-rotation to goal
+            // Y BUTTON: Start one-time rotation to goal
             if (yButton && !prevY) {
-                autoRotatingToGoal = !autoRotatingToGoal;
+                // Calculate the target angle to face the goal
+                targetRotationAngle = LocalizationHelper.getAngleToTarget(drive, goalX, goalY);
+                isRotatingToGoal = true;
             }
             prevY = yButton;
 
@@ -296,11 +299,15 @@ public class BlueQualTeleOp extends LinearOpMode {
             telemetry.addLine("=== CONTROLS ===");
             telemetry.addLine("LB: Intake Toggle | RB: Shoot");
             telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
-            telemetry.addLine("Y: Auto-Rotate to Goal");
+            telemetry.addLine("Y: Rotate to Goal");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
-            telemetry.addData("Auto-Rotating", autoRotatingToGoal ? "YES" : "NO");
-            if (autoRotatingToGoal) {
-                double angleError = LocalizationHelper.getAngleErrorToTarget(drive, goalX, goalY);
+            telemetry.addData("Rotating", isRotatingToGoal ? "YES" : "NO");
+            if (isRotatingToGoal) {
+                double currentHeading = currentPose.heading.toDouble();
+                double angleError = targetRotationAngle - currentHeading;
+                // Normalize to [-π, π]
+                while (angleError > Math.PI) angleError -= 2 * Math.PI;
+                while (angleError < -Math.PI) angleError += 2 * Math.PI;
                 telemetry.addData("Angle Error", "%.1f deg", Math.toDegrees(angleError));
             }
             telemetry.update();
@@ -312,13 +319,18 @@ public class BlueQualTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = (gamepad1.right_stick_x)*.75;
 
-            // Auto-rotation to goal override
-            if (autoRotatingToGoal) {
-                double angleError = LocalizationHelper.getAngleErrorToTarget(drive, goalX, goalY);
+            // One-time rotation to goal
+            if (isRotatingToGoal) {
+                double currentHeading = currentPose.heading.toDouble();
+                double angleError = targetRotationAngle - currentHeading;
 
-                // If within tolerance, turn off auto-rotation
+                // Normalize to [-π, π] for shortest path
+                while (angleError > Math.PI) angleError -= 2 * Math.PI;
+                while (angleError < -Math.PI) angleError += 2 * Math.PI;
+
+                // If within tolerance, stop rotating
                 if (Math.abs(angleError) < ROTATION_TOLERANCE_RAD) {
-                    autoRotatingToGoal = false;
+                    isRotatingToGoal = false;
                     rx = 0;
                 } else {
                     // Apply proportional control to rotation
@@ -329,7 +341,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
                 // Driver can still override with right stick
                 if (Math.abs(gamepad1.right_stick_x) > 0.1) {
-                    autoRotatingToGoal = false;
+                    isRotatingToGoal = false;
                     rx = (gamepad1.right_stick_x) * 0.75;
                 }
             }
