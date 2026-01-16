@@ -31,9 +31,9 @@ public class RedCloseAuto extends LinearOpMode {
         //shoot
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(-45)))
-                .strafeToLinearHeading(new Vector2d(-12,20),Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-12,48), Math.toRadians(90))
-                .strafeToLinearHeading(new Vector2d(-12,40), Math.toRadians(90));
+                .strafeToLinearHeading(new Vector2d(11,20),Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(11,48), Math.toRadians(90))
+                .strafeToLinearHeading(new Vector2d(11,40), Math.toRadians(90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -12, 40, Math.toRadians(90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(-45));
