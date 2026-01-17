@@ -62,7 +62,7 @@ public class mechanisms {
     public class flywheelSpin implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            flywheel.setVelocity(1237);
+            flywheel.setVelocity(1230);
             return false;
         }
     }
@@ -73,7 +73,7 @@ public class mechanisms {
     public class flywheelSpin2 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            flywheel.setVelocity(1230);
+            flywheel.setVelocity(1190);
             return false;
         }
     }
@@ -120,7 +120,7 @@ public class mechanisms {
         new SleepAction(1),
         blockerOpen(),
         intup(),
-        new SleepAction(1),
+        new SleepAction(.75),
         flywheelSpin2(),
         new SleepAction(1),
         flywheelStop(),
@@ -133,7 +133,7 @@ public class mechanisms {
             new SleepAction(1),
             blockerOpen(),
             intup(),
-            new SleepAction(1.5),
+            new SleepAction(.75),
             flywheelSpin2(),
             new SleepAction(1),
             flywheelStop(),
@@ -146,7 +146,7 @@ public class mechanisms {
             new SleepAction(1),
             blockerOpen(),
             intup(),
-            new SleepAction(1.5),
+            new SleepAction(.75),
             flywheelSpin2(),
             new SleepAction(1),
             flywheelStop(),

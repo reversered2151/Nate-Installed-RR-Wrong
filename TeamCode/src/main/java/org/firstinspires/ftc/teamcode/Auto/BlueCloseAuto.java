@@ -34,7 +34,7 @@ public class BlueCloseAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(-56, -43, Math.toRadians(45));
+        Pose2d initialPose = new Pose2d(-60, -36, Math.toRadians(0));
         MecanumDrive drive = LocalizationHelper.initializeForAuto(hardwareMap, initialPose);
         mechanisms m = new mechanisms(hardwareMap);
 
@@ -43,24 +43,25 @@ public class BlueCloseAuto extends LinearOpMode {
                 //shoot
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-8,-20),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-8,-48), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-8,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-6,-20),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-6,-54), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-6,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -8, -40, Math.toRadians(-90)))
+        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -6, -40, Math.toRadians(-90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));
                 //shoot
 
         TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(15,-20),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(15,-52), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(15,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(18,-25),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(18,-58
+                ), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(18,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 15, -40,Math.toRadians(-90)))
+        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 18, -40,Math.toRadians(-90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(13,-15),Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(launchX,-45),Math.toRadians(-90));
         // actions that need to happen on init; for instance, a claw tightening.
 
         //init loop

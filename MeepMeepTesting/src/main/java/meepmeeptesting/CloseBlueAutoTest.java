@@ -10,9 +10,9 @@ public class CloseBlueAutoTest {
 
     //Location for the robot to start
     //TODO Change if starting close/far and for red/blue
-    static double startX = -56;
-    static double startY = -43;
-    static double startHeading = 45; //In degrees
+    static double startX = -60;
+    static double startY = -36;
+    static double startHeading = 0; //In degrees
     static Pose2d startPose = new Pose2d(startX,startY,Math.toRadians(startHeading));
 
     //Position and heading the robot needs to be to launch the artifact

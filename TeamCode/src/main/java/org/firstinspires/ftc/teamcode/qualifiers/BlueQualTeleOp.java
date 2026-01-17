@@ -97,7 +97,6 @@ public class BlueQualTeleOp extends LinearOpMode {
         fr = drive.rightFront;
         bl = drive.leftBack;
         br = drive.rightBack;
-
         telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
             PoseStorage.currentPose.position.x,
             PoseStorage.currentPose.position.y,
@@ -125,8 +124,8 @@ public class BlueQualTeleOp extends LinearOpMode {
 
             else if (gamepad1.dpad_down) {
                 // Blue Goal
-                LocalizationHelper.resetPosition(drive, new Pose2d(-56, -43, Math.toRadians(45)));
-                telemetry.addData("Position Override", "Blue Goal (-56, -43, 45°)");
+                LocalizationHelper.resetPosition(drive, new Pose2d(-65, -40, Math.toRadians(0)));
+                telemetry.addData("Position Override", "Blue Goal (-65, -40, 0°)");
                 telemetry.update();
                 sleep(300);
             }
