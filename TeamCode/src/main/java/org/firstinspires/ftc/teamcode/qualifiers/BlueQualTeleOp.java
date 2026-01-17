@@ -115,9 +115,9 @@ public class BlueQualTeleOp extends LinearOpMode {
         while (!isStarted() && !isStopRequested()) {
 
             if (gamepad1.dpad_up) {
-                // Blue Auto position
-                LocalizationHelper.resetPosition(drive, new Pose2d(13, -15, Math.toRadians(-90)));
-                telemetry.addData("Position Override", "Blue Auto (13, -15, -90)");
+                // Blue Auto END position
+                LocalizationHelper.resetPosition(drive, new Pose2d(-24, -45, Math.toRadians(-90)));
+                telemetry.addData("Position Override", "Blue Auto END (-24, -45, -90)");
                 telemetry.update();
                 sleep(300); // Debounce
             }
@@ -131,13 +131,9 @@ public class BlueQualTeleOp extends LinearOpMode {
             }
         }
 
-        // Initialize teleop - close blocker and reset heading
+        // Initialize teleop - close blocker
+        // Keep the full pose from auto (including heading) for accurate field-centric drive
         blocker.setPosition(BLOCKER_CLOSED);
-        LocalizationHelper.resetPosition(drive, new Pose2d(
-            PoseStorage.currentPose.position.x,
-            PoseStorage.currentPose.position.y,
-            0
-        ));
 
         while (opModeIsActive()){
 
@@ -233,8 +229,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
                 case SPINNING_UP:
                     // Step 2: Spin flywheel to target RPM
-//                    spinFlywheelTo(targetRpm);
-                    flywheel.setVelocity(targetRpm);
+                    spinFlywheelTo(targetRpm);
 
                     // Step 3: Wait until flywheel reaches target speed
                     if (System.currentTimeMillis() - stateStartTime > 1000) {
@@ -258,8 +253,7 @@ public class BlueQualTeleOp extends LinearOpMode {
                     uptake.setPower(0.7);
 
                     // Keep flywheel at speed
-//                    spinFlywheelTo(targetRpm);
-                    flywheel.setVelocity(targetRpm);
+                    spinFlywheelTo(targetRpm);
 
                     // Step 6: Hold for 1-2 seconds
                     if (System.currentTimeMillis() - stateStartTime >= SHOOT_DURATION_MS) {
