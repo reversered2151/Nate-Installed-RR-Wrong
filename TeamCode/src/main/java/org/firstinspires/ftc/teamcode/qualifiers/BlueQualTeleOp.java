@@ -97,22 +97,19 @@ public class BlueQualTeleOp extends LinearOpMode {
         fr = drive.rightFront;
         bl = drive.leftBack;
         br = drive.rightBack;
-        telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
-            PoseStorage.currentPose.position.x,
-            PoseStorage.currentPose.position.y,
-            Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
-        telemetry.addLine();
-        telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
-        telemetry.addLine("DPAD_UP: Blue Auto");
-        telemetry.addLine("DPAD_DOWN: Blue Goal");
-        telemetry.addLine();
-        telemetry.addData("Status", "Ready - Press buttons to override position");
-        telemetry.update();
-
-
-
         // Manual position selection during init
         while (!isStarted() && !isStopRequested()) {
+            telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
+                PoseStorage.currentPose.position.x,
+                PoseStorage.currentPose.position.y,
+                Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
+            telemetry.addLine();
+            telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
+            telemetry.addLine("DPAD_UP: Blue Auto");
+            telemetry.addLine("DPAD_DOWN: Blue Goal");
+            telemetry.addLine();
+            telemetry.addData("Status", "Ready - Press buttons to override position");
+            telemetry.update();
 
             if (gamepad1.dpad_up) {
                 // Blue Auto END position
