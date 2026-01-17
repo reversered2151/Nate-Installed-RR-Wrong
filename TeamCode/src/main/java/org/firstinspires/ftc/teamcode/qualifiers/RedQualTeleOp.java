@@ -216,8 +216,7 @@ public class RedQualTeleOp extends LinearOpMode {
 
                 case STOPPING_INTAKE:
                     // Step 1: Stop intake and uptake
-                    intake.setPower(0);
-                    uptake.setPower(0);
+          
                     blocker.setPosition(BLOCKER_CLOSED);
 
                     // Move to next state immediately
