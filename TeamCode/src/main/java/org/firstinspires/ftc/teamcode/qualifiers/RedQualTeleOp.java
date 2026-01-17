@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.qualifiers;
 
+import static org.firstinspires.ftc.teamcode.PoseStorage.currentPose;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -21,12 +23,12 @@ public class RedQualTeleOp extends LinearOpMode {
     private static final double REGRESSION_INTERCEPT = 764.10156;
 
     // Goal positions on field (in inches, measured from field center)
-    private static final double RED_GOAL_X = -60.0;
-    private static final double RED_GOAL_Y = 60.0;
+    private static final double RED_GOAL_X = -70.0;
+    private static final double RED_GOAL_Y = 70.0;
 
     // Flywheel limits
     private static final double MIN_RPM = 500.0;
-    private static final double MAX_RPM = 7000.0;
+    private static final double MAX_RPM = 6000.0;
     private static final double SPEED_TOL_RPM = 100.0;  // RPM tolerance for "at speed"
     private static final double TICKS_PER_REV = 28.0;
 
@@ -97,33 +99,32 @@ public class RedQualTeleOp extends LinearOpMode {
         bl = drive.leftBack;
         br = drive.rightBack;
 
-        telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
-                PoseStorage.currentPose.position.x,
-                PoseStorage.currentPose.position.y,
-                Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
-        telemetry.addLine();
-        telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
-        telemetry.addLine("DPAD_UP: Red Auto");
-        telemetry.addLine("DPAD_DOWN: Red Goal");
-        telemetry.addLine();
-        telemetry.addData("Status", "Ready - Press buttons to override position");
-        telemetry.update();
-
 
 
         // Manual position selection during init
         while (!isStarted() && !isStopRequested()) {
+            telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
+                    PoseStorage.currentPose.position.x,
+                    PoseStorage.currentPose.position.y,
+                    Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
+            telemetry.addLine();
+            telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
+            telemetry.addLine("DPAD_UP: Red Auto");
+            telemetry.addLine("DPAD_DOWN: Red Goal");
+            telemetry.addLine();
+            telemetry.addData("Status", "Ready - Press buttons to override position");
+            telemetry.update();
 
             if (gamepad1.dpad_up) {
                 // Blue Auto position
-                LocalizationHelper.resetPosition(drive, new Pose2d(13, 15, Math.toRadians(90)));
-                telemetry.addData("Position Override", "Red Auto (13, 15, 90)");
+                LocalizationHelper.resetPosition(drive, new Pose2d(-24, 45, Math.toRadians(90)));
+                telemetry.addData("Position Override", "Red Auto (-24, 45, 90)");
                 telemetry.update();
                 sleep(300); // Debounce
             } else if (gamepad1.dpad_down) {
                 // Reset to origin
-                LocalizationHelper.resetPosition(drive, new Pose2d(-56, 43, Math.toRadians(-45)));
-                telemetry.addData("Position Override", "Red Goal (-56, 43, -45°)");
+                LocalizationHelper.resetPosition(drive, new Pose2d(-65, 40, Math.toRadians(0)));
+                telemetry.addData("Position Override", "Red Goal (-65, 40, 0°)");
                 telemetry.update();
                 sleep(300); // Debounce
             }
@@ -131,11 +132,7 @@ public class RedQualTeleOp extends LinearOpMode {
 
         // Initialize teleop - close blocker and reset heading
         blocker.setPosition(BLOCKER_CLOSED);
-        LocalizationHelper.resetPosition(drive, new Pose2d(
-                PoseStorage.currentPose.position.x,
-                PoseStorage.currentPose.position.y,
-                0
-        ));
+        LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
 
         while (opModeIsActive()){
 
