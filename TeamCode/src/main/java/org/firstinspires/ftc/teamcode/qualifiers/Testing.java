@@ -78,8 +78,8 @@ public class Testing extends LinearOpMode {
             }
 
             if (gamepad1.y) {
-                intake.setPower(.7);
-                uptake.setPower(.7);
+                intake.setPower(.8);
+                uptake.setPower(.8);
             } else if (gamepad1.a) {
                 intake.setPower(0);
                 uptake.setPower(0);

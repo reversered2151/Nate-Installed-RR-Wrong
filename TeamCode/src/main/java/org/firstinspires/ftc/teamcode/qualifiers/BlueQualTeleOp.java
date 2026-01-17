@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.qualifiers;
 
+import static org.firstinspires.ftc.teamcode.PoseStorage.currentPose;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -131,6 +133,7 @@ public class BlueQualTeleOp extends LinearOpMode {
         // Initialize teleop - close blocker
         // Keep the full pose from auto (including heading) for accurate field-centric drive
         blocker.setPosition(BLOCKER_CLOSED);
+        LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
 
         while (opModeIsActive()){
 
@@ -246,8 +249,8 @@ public class BlueQualTeleOp extends LinearOpMode {
                     blocker.setPosition(BLOCKER_OPEN);
 
                     // Step 5: Restart intake and uptake
-                    intake.setPower(0.7);
-                    uptake.setPower(0.7);
+                    intake.setPower(0.8);
+                    uptake.setPower(0.8);
 
                     // Keep flywheel at speed
                     spinFlywheelTo(targetRpm);

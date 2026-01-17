@@ -248,8 +248,8 @@ public class RedQualTeleOp extends LinearOpMode {
                     blocker.setPosition(BLOCKER_OPEN);
 
                     // Step 5: Restart intake and uptake
-                    intake.setPower(0.7);
-                    uptake.setPower(0.7);
+                    intake.setPower(0.8);
+                    uptake.setPower(0.8);
 
                     // Keep flywheel at speed
 //                    spinFlywheelTo(targetRpm);
