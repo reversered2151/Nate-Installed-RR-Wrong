@@ -21,12 +21,12 @@ public class BlueQualTeleOp extends LinearOpMode {
     private static final double REGRESSION_INTERCEPT = 764.10156;
 
     // Goal positions on field (in inches, measured from field center)
-    private static final double BLUE_GOAL_X = -60.0;
-    private static final double BLUE_GOAL_Y = -60.0;
+    private static final double BLUE_GOAL_X = -70.0;
+    private static final double BLUE_GOAL_Y = -70.0;
 
     // Flywheel limits
     private static final double MIN_RPM = 500.0;
-    private static final double MAX_RPM = 7000.0;
+    private static final double MAX_RPM = 6000.0;
     private static final double SPEED_TOL_RPM = 100.0;  // RPM tolerance for "at speed"
     private static final double TICKS_PER_REV = 28.0;
 

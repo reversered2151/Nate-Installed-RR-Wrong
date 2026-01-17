@@ -48,13 +48,12 @@ public class BlueCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(-6,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -6, -40, Math.toRadians(-90)))
-                .strafeToLinearHeading(launchPose,Math.toRadians(45));
+                .strafeToLinearHeading(launchPose,Math.toRadians(50));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(50)))
                 .strafeToLinearHeading(new Vector2d(18,-25),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(18,-58
-                ), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(18,-58), Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(18,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 18, -40,Math.toRadians(-90)))
