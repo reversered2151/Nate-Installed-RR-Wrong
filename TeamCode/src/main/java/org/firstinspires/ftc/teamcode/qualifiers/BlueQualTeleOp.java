@@ -196,7 +196,7 @@ public class BlueQualTeleOp extends LinearOpMode {
                 // Toggle intake/uptake
                 if (intake.getPower() == 0) {
                     intake.setPower(0.8);
-                    uptake.setVelocity(1600);
+                    uptake.setVelocity(1500);
                 } else {
                     intake.setPower(0);
                     uptake.setVelocity(0);
@@ -263,7 +263,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
                     // Step 5: Restart intake and uptake
                     intake.setPower(0.8);
-                    uptake.setVelocity(1600);
+                    uptake.setVelocity(1500);
 
                     // Keep flywheel at speed
                     spinFlywheelTo(targetVelocity);
