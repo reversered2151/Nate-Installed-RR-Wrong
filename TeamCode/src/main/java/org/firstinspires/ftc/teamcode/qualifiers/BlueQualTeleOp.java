@@ -62,9 +62,10 @@ public class BlueQualTeleOp extends LinearOpMode {
     // One-time rotation to goal
     private boolean isRotatingToGoal = false;
     private double targetRotationAngle = 0.0;
-    private static final double ROTATION_KP = 1.2;  // Proportional gain for rotation
-    private static final double ROTATION_MIN_POWER = 0.15;  // Minimum power to overcome friction
-    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(2.0);  // 2 degree tolerance
+    private static final double ROTATION_KP = 0.4;  // Proportional gain for rotation (reduced to prevent oscillation)
+    private static final double ROTATION_MIN_POWER = 0.10;  // Minimum power to overcome friction
+    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(5.0);  // 5 degree tolerance
+    private static final double ROTATION_MAX_POWER = 0.5;  // Maximum rotation speed
 
     qualifiersHardwareMap hardware = new qualifiersHardwareMap();
     MecanumDrive drive;
@@ -351,8 +352,8 @@ public class BlueQualTeleOp extends LinearOpMode {
                         rx = sign * Math.max(Math.abs(rx), ROTATION_MIN_POWER);
                     }
 
-                    // Clamp to reasonable values
-                    rx = Math.max(-0.75, Math.min(0.75, rx));
+                    // Clamp to max rotation power to prevent overshoot
+                    rx = Math.max(-ROTATION_MAX_POWER, Math.min(ROTATION_MAX_POWER, rx));
                     rotationPower = rx;
                 }
 
