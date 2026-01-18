@@ -120,7 +120,6 @@ public class BlueQualTeleOp extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 // Blue Auto END position
                 LocalizationHelper.resetPosition(drive, new Pose2d(-24, -45, Math.toRadians(-90)));
-                LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
                 telemetry.addData("Position Override", "Blue Auto END (-24, -45, -90)");
                 telemetry.update();
                 sleep(300); // Debounce
@@ -129,7 +128,6 @@ public class BlueQualTeleOp extends LinearOpMode {
             else if (gamepad1.dpad_down) {
                 // Blue Goal
                 LocalizationHelper.resetPosition(drive, new Pose2d(-65, -40, Math.toRadians(0)));
-                LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
                 telemetry.addData("Position Override", "Blue Goal (-65, -40, 0°)");
                 telemetry.update();
                 sleep(300);

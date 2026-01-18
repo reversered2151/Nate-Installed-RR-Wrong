@@ -123,8 +123,7 @@ public class RedQualTeleOp extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 // Red Auto END position
-                LocalizationHelper.resetPosition(drive, new Pose2d(-24, 45, Math.toRadians(90)));
-                LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
+                LocalizationHelper.resetPosition(drive, new Pose2d(-24, 45, Math.toRadians(0)));
                 telemetry.addData("Position Override", "Red Auto END (-24, 45, 90)");
                 telemetry.update();
                 sleep(300); // Debounce
@@ -133,7 +132,6 @@ public class RedQualTeleOp extends LinearOpMode {
             else if (gamepad1.dpad_down) {
                 // Red Goal
                 LocalizationHelper.resetPosition(drive, new Pose2d(-65, 40, Math.toRadians(0)));
-                LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
                 telemetry.addData("Position Override", "Red Goal (-65, 40, 0°)");
                 telemetry.update();
                 sleep(300);
@@ -153,7 +151,7 @@ public class RedQualTeleOp extends LinearOpMode {
         blocker.setPosition(BLOCKER_CLOSED);
         LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
 
-        LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x - 24, currentPose.position.y + 45, 180));
+        LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x - 24, currentPose.position.y + 45, 0));
 
         while (opModeIsActive()){
 
