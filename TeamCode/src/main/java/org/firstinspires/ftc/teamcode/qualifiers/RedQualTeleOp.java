@@ -34,6 +34,8 @@ public class RedQualTeleOp extends LinearOpMode {
 
     // Shooting timing
     private static final long SHOOT_DURATION_MS = 2000;  // Hold shooting for 2 seconds
+    private static final long FULL_SPEED_DURATION_MS = 1000;  // Full speed for 1 second
+    private static final double VELOCITY_REDUCTION = 20.0;  // Reduce velocity by 20 after first second
 
     // Servo positions (from mechanisms.java)
     private static final double BLOCKER_OPEN = 0.6;
@@ -273,8 +275,15 @@ public class RedQualTeleOp extends LinearOpMode {
                     intake.setPower(0.8);
                     uptake.setVelocity(1000);
 
-                    // Keep flywheel at speed
-                    spinFlywheelTo(targetVelocity);
+                    // Keep flywheel at speed - reduce velocity after first second
+                    long elapsedShootingTime = System.currentTimeMillis() - stateStartTime;
+                    if (elapsedShootingTime >= FULL_SPEED_DURATION_MS) {
+                        // After 1 second, reduce velocity for remaining balls
+                        spinFlywheelTo(targetVelocity - VELOCITY_REDUCTION);
+                    } else {
+                        // First second at full speed
+                        spinFlywheelTo(targetVelocity);
+                    }
 
                     // Step 6: Hold for 1-2 seconds
                     if (System.currentTimeMillis() - stateStartTime >= SHOOT_DURATION_MS) {
