@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.PoseStorage;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
 
-@TeleOp(name = "RedTeleOp", group = "qualifiers")
+@TeleOp(name = "RED teleop", group = "qualifiers")
 public class RedQualTeleOp extends LinearOpMode {
 
     // Formula: RPM = REGRESSION_SLOPE * distance_meters + REGRESSION_INTERCEPT

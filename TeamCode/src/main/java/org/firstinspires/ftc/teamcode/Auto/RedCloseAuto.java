@@ -39,7 +39,7 @@ public class RedCloseAuto extends LinearOpMode {
         mechanisms m = new mechanisms(hardwareMap);
 
         TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(launchPose,Math.toRadians(-45));
+                .strafeToLinearHeading(launchPose,Math.toRadians(-50));
                 //shoot
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(-45)))

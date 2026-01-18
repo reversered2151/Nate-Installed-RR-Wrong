@@ -10,7 +10,7 @@ import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@TeleOp(name = "EmergencyTeleOp", group = "qualifiers")
+@TeleOp(name = "emergency teleop", group = "qualifiers")
 public class EmergencyTeleOp extends LinearOpMode {
 
     // Fixed shooting velocity (adjust as needed)
@@ -58,7 +58,6 @@ public class EmergencyTeleOp extends LinearOpMode {
         bl = hardware.bl;
         br = hardware.br;
 
-        imu = hardware.imu;;
 
         // Close blocker initially
         blocker.setPosition(BLOCKER_CLOSED);

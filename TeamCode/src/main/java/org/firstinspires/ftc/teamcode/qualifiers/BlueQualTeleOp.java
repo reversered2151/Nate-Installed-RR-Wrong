@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.LocalizationHelper;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
 
-@TeleOp(name = "BlueTeleOp", group = "qualifiers")
+@TeleOp(name = "BLUE teleop", group = "qualifiers")
 public class BlueQualTeleOp extends LinearOpMode {
 
     // Formula: RPM = REGRESSION_SLOPE * distance_meters + REGRESSION_INTERCEPT

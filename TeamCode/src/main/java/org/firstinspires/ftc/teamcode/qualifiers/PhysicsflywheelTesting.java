@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.qualifiers;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -10,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.LocalizationHelper;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
+@Disabled
 @TeleOp(name = "Flywheel Testing (Localization)", group = "qualifiers")
 public class PhysicsflywheelTesting extends LinearOpMode {
 
