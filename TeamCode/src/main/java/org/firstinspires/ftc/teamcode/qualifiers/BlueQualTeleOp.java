@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.qualifiers;
 
+import static org.firstinspires.ftc.teamcode.PoseStorage.currentPose;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -9,7 +11,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.LocalizationHelper;
-import org.firstinspires.ftc.teamcode.PoseStorage;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
 
@@ -21,8 +22,8 @@ public class BlueQualTeleOp extends LinearOpMode {
     private static final double REGRESSION_INTERCEPT = 764.10156;
 
     // Goal positions on field (in inches, measured from field center)
-    private static final double BLUE_GOAL_X = -70.0;
-    private static final double BLUE_GOAL_Y = -70.0;
+    private static final double BLUE_GOAL_X = -50.0;
+    private static final double BLUE_GOAL_Y = -50.0;
 
     // Flywheel limits
     private static final double MIN_RPM = 500.0;
@@ -49,7 +50,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
     private ShootingState shootingState = ShootingState.IDLE;
     private long stateStartTime = 0;
-    private double targetRpm = 0.0;
+    private double targetVelocity = 0.0;
 
     // Button debouncing
     private boolean prevRightBumper = false;
@@ -100,9 +101,9 @@ public class BlueQualTeleOp extends LinearOpMode {
         // Manual position selection during init
         while (!isStarted() && !isStopRequested()) {
             telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
-                    PoseStorage.currentPose.position.x,
-                    PoseStorage.currentPose.position.y,
-                    Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
+                    currentPose.position.x,
+                    currentPose.position.y,
+                    Math.toDegrees(currentPose.heading.toDouble()));
             telemetry.addLine();
             telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
             telemetry.addLine("DPAD_UP: Blue Auto");
@@ -141,7 +142,7 @@ public class BlueQualTeleOp extends LinearOpMode {
         // Initialize teleop - close blocker
         // Keep the full pose from auto (including heading) for accurate field-centric drive
         blocker.setPosition(BLOCKER_CLOSED);
-        LocalizationHelper.resetPosition(drive, new Pose2d(PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, 0));
+        LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
 
         while (opModeIsActive()){
 
@@ -160,10 +161,10 @@ public class BlueQualTeleOp extends LinearOpMode {
             }
 
             // Calculate distance to goal and target RPM
-            double goalX = BLUE_GOAL_X;
+            double goalX = -BLUE_GOAL_X;
             double goalY = BLUE_GOAL_Y;
             double distanceToGoal = LocalizationHelper.getDistanceToTargetMeters(drive, goalX, goalY);
-            double calculatedRpm = computeRPMLinearRegression(distanceToGoal);
+            double calculatedRpm = computeVelocityLinearRegression(distanceToGoal);
 
             // ========================================================================
             // SHOOTING CONTROLS
@@ -189,7 +190,7 @@ public class BlueQualTeleOp extends LinearOpMode {
                 // Toggle intake/uptake
                 if (intake.getPower() == 0) {
                     intake.setPower(0.8);
-                    uptake.setVelocity(1500);
+                    uptake.setVelocity(1600);
                 } else {
                     intake.setPower(0);
                     uptake.setVelocity(0);
@@ -200,7 +201,7 @@ public class BlueQualTeleOp extends LinearOpMode {
             // RIGHT BUMPER: Start shooting sequence
             if (rightBumper && !prevRightBumper && shootingState == ShootingState.IDLE) {
                 shootingState = ShootingState.STOPPING_INTAKE;
-                targetRpm = calculatedRpm;
+                targetVelocity = calculatedRpm;
                 stateStartTime = System.currentTimeMillis();
             }
             prevRightBumper = rightBumper;
@@ -235,7 +236,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
                 case SPINNING_UP:
                     // Step 2: Spin flywheel to target RPM
-                    spinFlywheelTo(targetRpm);
+                    spinFlywheelTo(targetVelocity);
 
                     // Step 3: Wait until flywheel reaches target speed
                     if (System.currentTimeMillis() - stateStartTime > 1000) {
@@ -256,10 +257,10 @@ public class BlueQualTeleOp extends LinearOpMode {
 
                     // Step 5: Restart intake and uptake
                     intake.setPower(0.8);
-                    uptake.setVelocity(1500);
+                    uptake.setVelocity(1600);
 
                     // Keep flywheel at speed
-                    spinFlywheelTo(targetRpm);
+                    spinFlywheelTo(targetVelocity);
 
                     // Step 6: Hold for 1-2 seconds
                     if (System.currentTimeMillis() - stateStartTime >= SHOOT_DURATION_MS) {
@@ -288,7 +289,8 @@ public class BlueQualTeleOp extends LinearOpMode {
             telemetry.addData("Distance", "%.2f m", distanceToGoal);
             telemetry.addData("Target RPM", "%.0f", calculatedRpm);
             telemetry.addData("Actual RPM", "%.0f", ticksPerSecToRpm(flywheel.getVelocity()));
-            telemetry.addData("At Speed", isFlywheelAtSpeed(targetRpm) ? "YES" : "NO");
+            telemetry.addData("Velocity", "%.0f", flywheel.getVelocity());
+            telemetry.addData("At Speed", isFlywheelAtSpeedNEW(targetVelocity) ? "YES" : "NO");
             telemetry.addLine();
             telemetry.addLine("=== POSITION ===");
             telemetry.addData("X Position", currentPose.position.x);
@@ -393,11 +395,16 @@ public class BlueQualTeleOp extends LinearOpMode {
         return clamp(rpm, MIN_RPM, MAX_RPM);
     }
 
+    private double computeVelocityLinearRegression(double distanceMeters){
+        double vel = REGRESSION_SLOPE * distanceMeters + REGRESSION_INTERCEPT;
+        return clamp(vel, MIN_RPM,MAX_RPM);
+    }
+
     /**
      * Command flywheel to spin at target RPM
      */
     private void spinFlywheelTo(double rpm) {
-        flywheel.setVelocity(rpmToTicksPerSec(rpm));
+        flywheel.setVelocity(rpm);
     }
 
     /**
@@ -412,6 +419,11 @@ public class BlueQualTeleOp extends LinearOpMode {
      */
     private boolean isFlywheelAtSpeed(double targetRpm) {
         double currentRpm = ticksPerSecToRpm(flywheel.getVelocity());
+        return Math.abs(currentRpm - targetRpm) <= SPEED_TOL_RPM;
+    }
+
+    private boolean isFlywheelAtSpeedNEW(double targetRpm) {
+        double currentRpm = flywheel.getVelocity();
         return Math.abs(currentRpm - targetRpm) <= SPEED_TOL_RPM;
     }
 
