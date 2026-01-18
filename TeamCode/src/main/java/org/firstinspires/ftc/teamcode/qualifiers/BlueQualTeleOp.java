@@ -63,8 +63,8 @@ public class BlueQualTeleOp extends LinearOpMode {
     // One-time rotation to goal
     private boolean isRotatingToGoal = false;
     private double targetRotationAngle = 0.0;
-    private static final double ROTATION_KP = 0.8;  // Proportional gain for rotation
-    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(2.0);  // 2 degree tolerance
+    private static final double ROTATION_KP = 0.3;  // Proportional gain for rotation
+    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(4.0);  // 4 degree tolerance
 
     qualifiersHardwareMap hardware = new qualifiersHardwareMap();
     MecanumDrive drive;
@@ -299,6 +299,8 @@ public class BlueQualTeleOp extends LinearOpMode {
                 // Normalize to [-π, π]
                 while (angleError > Math.PI) angleError -= 2 * Math.PI;
                 while (angleError < -Math.PI) angleError += 2 * Math.PI;
+                telemetry.addData("Target Angle", "%.1f deg", Math.toDegrees(targetRotationAngle));
+                telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentHeading));
                 telemetry.addData("Angle Error", "%.1f deg", Math.toDegrees(angleError));
             }
             telemetry.update();
