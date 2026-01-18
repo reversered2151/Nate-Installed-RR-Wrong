@@ -65,7 +65,7 @@ public class BlueQualTeleOp extends LinearOpMode {
     private long prevRotationTime = 0;  // Previous time for derivative calculation
 
     private static final double ROTATION_KP = 0.5;  // Proportional gain
-    private static final double ROTATION_KD = 5.0;  // Derivative gain (damping)
+    private static final double ROTATION_KD = 0.8;  // Derivative gain (damping)
     private static final double ROTATION_MIN_POWER = 0.08;  // Minimum power to overcome friction
     private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(6.0);  // 6 degree tolerance
     private static final double ROTATION_MAX_POWER = 0.6;  // Maximum rotation speed
@@ -317,11 +317,11 @@ public class BlueQualTeleOp extends LinearOpMode {
                     // PD Control: P term pushes toward target, D term resists fast changes (damping)
                     double pTerm = angleError * ROTATION_KP;
                     double dTerm = derivative * ROTATION_KD;
-                    rx = pTerm + dTerm;
+                    rx = -(pTerm + dTerm);
 
-                    // Apply minimum power only when far from target (>15 degrees) and not moving too fast
-                    if (Math.abs(angleError) > Math.toRadians(15.0) && Math.abs(rx) < ROTATION_MIN_POWER) {
-                        rx = Math.signum(angleError) * ROTATION_MIN_POWER;
+                    // Apply minimum power only when far from target (>3 degrees) and not moving too fast
+                    if (Math.abs(angleError) > Math.toRadians(3.0) && Math.abs(rx) < ROTATION_MIN_POWER) {
+                        rx = -Math.signum(angleError) * ROTATION_MIN_POWER;
                     }
 
                     // Clamp to max rotation power
@@ -333,7 +333,7 @@ public class BlueQualTeleOp extends LinearOpMode {
                     prevRotationTime = currentTime;
                 } else {
                     // First loop or invalid dt - use pure P control
-                    rx = angleError * ROTATION_KP;
+                    rx = -(angleError * ROTATION_KP);
                     rx = Math.max(-ROTATION_MAX_POWER, Math.min(ROTATION_MAX_POWER, rx));
                     rotationPower = rx;
 
