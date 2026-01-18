@@ -61,7 +61,6 @@ public class BlueQualTeleOp extends LinearOpMode {
 
     // One-time rotation to goal
     private boolean isRotatingToGoal = false;
-    private double targetRotationAngle = 0.0;
     private static final double ROTATION_KP = 0.4;  // Proportional gain for rotation (reduced to prevent oscillation)
     private static final double ROTATION_MIN_POWER = 0.10;  // Minimum power to overcome friction
     private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(5.0);  // 5 degree tolerance
@@ -168,10 +167,6 @@ public class BlueQualTeleOp extends LinearOpMode {
             double distanceToGoal = LocalizationHelper.getDistanceToTargetMeters(drive, goalX, goalY);
             double calculatedRpm = computeVelocityLinearRegression(distanceToGoal);
 
-            // Rotation debug variables
-            double rotationAngleError = 0;
-            double rotationPower = 0;
-
             // ========================================================================
             // SHOOTING CONTROLS
             // ========================================================================
@@ -185,8 +180,6 @@ public class BlueQualTeleOp extends LinearOpMode {
 
             // Y BUTTON: Start one-time rotation to goal
             if (yButton && !prevY) {
-                // Calculate the target angle to face the goal
-                targetRotationAngle = LocalizationHelper.getAngleToTarget(drive, goalX, goalY);
                 isRotatingToGoal = true;
             }
             prevY = yButton;
@@ -287,55 +280,22 @@ public class BlueQualTeleOp extends LinearOpMode {
             }
 
             // ========================================================================
-            // TELEMETRY
-            // ========================================================================
-
-            telemetry.addLine("=== SHOOTING STATUS ===");
-            telemetry.addData("State", shootingState.toString());
-            telemetry.addData("Distance", "%.2f m", distanceToGoal);
-            telemetry.addData("Target RPM", "%.0f", calculatedRpm);
-            telemetry.addData("Actual RPM", "%.0f", ticksPerSecToRpm(flywheel.getVelocity()));
-            telemetry.addData("Velocity", "%.0f", flywheel.getVelocity());
-            telemetry.addData("At Speed", isFlywheelAtSpeedNEW(targetVelocity) ? "YES" : "NO");
-            telemetry.addLine();
-            telemetry.addLine("=== POSITION ===");
-            telemetry.addData("X Position", currentPose.position.x);
-            telemetry.addData("Y Position", currentPose.position.y);
-            telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
-            telemetry.addLine();
-            telemetry.addLine("=== CONTROLS ===");
-            telemetry.addLine("LB: Intake Toggle | RB: Shoot");
-            telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
-            telemetry.addLine("Y: Rotate to Goal");
-            telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
-            telemetry.addLine();
-            telemetry.addLine("=== ROTATION DEBUG ===");
-            telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
-            telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
-            telemetry.addData("Rotation Power", "%.3f", rotationPower);
-            telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetRotationAngle));
-            telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
-            telemetry.addData("Raw Heading (rad)", "%.3f", currentPose.heading.toDouble());
-            telemetry.addData("Goal X", goalX);
-            telemetry.addData("Goal Y", goalY);
-            telemetry.update();
-
-            // ========================================================================
             // MOVEMENT - Field-Centric with Road Runner Integration
             // ========================================================================
             double y = -gamepad1.left_stick_y; // Remember, Y stick value is reversed
             double x = gamepad1.left_stick_x;
             double rx = (gamepad1.right_stick_x)*.75;
 
+            // Rotation control variables for telemetry
+            double rotationAngleError = 0;
+            double rotationPower = 0;
+            double targetAngle = 0;
+
             // One-time rotation to goal
             if (isRotatingToGoal) {
-                double currentHeading = currentPose.heading.toDouble();
-                double angleError = targetRotationAngle - currentHeading;
-
-                // Normalize to [-π, π] for shortest path
-                while (angleError > Math.PI) angleError -= 2 * Math.PI;
-                while (angleError < -Math.PI) angleError += 2 * Math.PI;
-
+                // Use the helper method that calculates error correctly
+                double angleError = LocalizationHelper.getAngleErrorToTarget(drive, goalX, goalY);
+                targetAngle = LocalizationHelper.getAngleToTarget(drive, goalX, goalY);
                 rotationAngleError = angleError;
 
                 // If within tolerance, stop rotating
@@ -363,6 +323,40 @@ public class BlueQualTeleOp extends LinearOpMode {
                     rx = (gamepad1.right_stick_x) * 0.75;
                 }
             }
+
+            // ========================================================================
+            // TELEMETRY
+            // ========================================================================
+
+            telemetry.addLine("=== SHOOTING STATUS ===");
+            telemetry.addData("State", shootingState.toString());
+            telemetry.addData("Distance", "%.2f m", distanceToGoal);
+            telemetry.addData("Target RPM", "%.0f", calculatedRpm);
+            telemetry.addData("Actual RPM", "%.0f", ticksPerSecToRpm(flywheel.getVelocity()));
+            telemetry.addData("Velocity", "%.0f", flywheel.getVelocity());
+            telemetry.addData("At Speed", isFlywheelAtSpeedNEW(targetVelocity) ? "YES" : "NO");
+            telemetry.addLine();
+            telemetry.addLine("=== POSITION ===");
+            telemetry.addData("X Position", currentPose.position.x);
+            telemetry.addData("Y Position", currentPose.position.y);
+            telemetry.addData("Heading (deg)", Math.toDegrees(currentPose.heading.toDouble()));
+            telemetry.addLine();
+            telemetry.addLine("=== CONTROLS ===");
+            telemetry.addLine("LB: Intake Toggle | RB: Shoot");
+            telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
+            telemetry.addLine("Y: Rotate to Goal");
+            telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
+            telemetry.addLine();
+            telemetry.addLine("=== ROTATION DEBUG ===");
+            telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
+            telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
+            telemetry.addData("Rotation Power", "%.3f", rotationPower);
+            telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetAngle));
+            telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
+            telemetry.addData("Raw Heading (rad)", "%.3f", currentPose.heading.toDouble());
+            telemetry.addData("Goal X", goalX);
+            telemetry.addData("Goal Y", goalY);
+            telemetry.update();
 
             // This button choice was made so that it is hard to hit on accident,
             // it can be freely changed based on preference.
