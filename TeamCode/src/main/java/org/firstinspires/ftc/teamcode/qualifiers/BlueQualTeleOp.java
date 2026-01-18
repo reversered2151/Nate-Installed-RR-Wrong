@@ -114,6 +114,7 @@ public class BlueQualTeleOp extends LinearOpMode {
             if (gamepad1.dpad_up) {
                 // Blue Auto END position
                 LocalizationHelper.resetPosition(drive, new Pose2d(-24, -45, Math.toRadians(-90)));
+                LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
                 telemetry.addData("Position Override", "Blue Auto END (-24, -45, -90)");
                 telemetry.update();
                 sleep(300); // Debounce
@@ -122,7 +123,16 @@ public class BlueQualTeleOp extends LinearOpMode {
             else if (gamepad1.dpad_down) {
                 // Blue Goal
                 LocalizationHelper.resetPosition(drive, new Pose2d(-65, -40, Math.toRadians(0)));
+                LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
                 telemetry.addData("Position Override", "Blue Goal (-65, -40, 0°)");
+                telemetry.update();
+                sleep(300);
+            }
+
+            else if (gamepad1.dpad_left) {
+                // Blue Goal
+                LocalizationHelper.resetPosition(drive, new Pose2d(70, -31, Math.toRadians(0)));
+                telemetry.addData("Position Override", "Far Blue");
                 telemetry.update();
                 sleep(300);
             }
@@ -143,8 +153,8 @@ public class BlueQualTeleOp extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 // Blue Auto position
-                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(-90)));
-                telemetry.addData("Blue Center Override", "(0, 0, -90)");
+                LocalizationHelper.resetPosition(drive, new Pose2d(0, 0, Math.toRadians(0)));
+                telemetry.addData("Blue Center Override", "(0, 0, 0)");
                 telemetry.update();
                 sleep(300); // Debounce
             }
@@ -179,10 +189,10 @@ public class BlueQualTeleOp extends LinearOpMode {
                 // Toggle intake/uptake
                 if (intake.getPower() == 0) {
                     intake.setPower(0.8);
-                    uptake.setPower(0.8);
+                    uptake.setVelocity(1500);
                 } else {
                     intake.setPower(0);
-                    uptake.setPower(0);
+                    uptake.setVelocity(0);
                 }
             }
             prevLeftBumper = leftBumper;
@@ -246,7 +256,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
                     // Step 5: Restart intake and uptake
                     intake.setPower(0.8);
-                    uptake.setPower(0.8);
+                    uptake.setVelocity(1500);
 
                     // Keep flywheel at speed
                     spinFlywheelTo(targetRpm);

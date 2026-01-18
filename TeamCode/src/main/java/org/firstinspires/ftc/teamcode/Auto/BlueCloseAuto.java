@@ -60,7 +60,7 @@ public class BlueCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(0,0),Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-24,-45),Math.toRadians(-90));
         // actions that need to happen on init; for instance, a claw tightening.
 
         //init loop

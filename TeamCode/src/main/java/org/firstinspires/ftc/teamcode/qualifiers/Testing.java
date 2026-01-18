@@ -100,6 +100,7 @@ public class Testing extends LinearOpMode {
             telemetry.addLine("Controls: LB = increase speed, RB = reset speed");
             telemetry.addLine("Target RPM:" + targetRpm);
             telemetry.addLine("Actual RPM:" + flywheel.getVelocity());
+            telemetry.addLine("Uptake RPM:" + uptake.getVelocity());
             telemetry.update();
 
             // Update previous button states
