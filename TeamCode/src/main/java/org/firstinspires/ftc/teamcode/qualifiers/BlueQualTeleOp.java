@@ -314,6 +314,9 @@ public class BlueQualTeleOp extends LinearOpMode {
             telemetry.addData("Rotation Power", "%.3f", rotationPower);
             telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetRotationAngle));
             telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
+            telemetry.addData("Raw Heading (rad)", "%.3f", currentPose.heading.toDouble());
+            telemetry.addData("Goal X", goalX);
+            telemetry.addData("Goal Y", goalY);
             telemetry.update();
 
             // ========================================================================
