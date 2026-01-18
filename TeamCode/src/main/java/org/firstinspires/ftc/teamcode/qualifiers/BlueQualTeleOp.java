@@ -59,12 +59,16 @@ public class BlueQualTeleOp extends LinearOpMode {
     private boolean prevLeftBumper = false;
     private boolean prevY = false;
 
-    // One-time rotation to goal
+    // One-time rotation to goal - PD Controller
     private boolean isRotatingToGoal = false;
-    private static final double ROTATION_KP = 0.3;  // Proportional gain for rotation
+    private double prevRotationError = 0.0;  // Previous error for derivative calculation
+    private long prevRotationTime = 0;  // Previous time for derivative calculation
+
+    private static final double ROTATION_KP = 0.5;  // Proportional gain
+    private static final double ROTATION_KD = 5.0;  // Derivative gain (damping)
     private static final double ROTATION_MIN_POWER = 0.08;  // Minimum power to overcome friction
-    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(8.0);  // 8 degree tolerance
-    private static final double ROTATION_MAX_POWER = 0.4;  // Maximum rotation speed
+    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(6.0);  // 6 degree tolerance
+    private static final double ROTATION_MAX_POWER = 0.6;  // Maximum rotation speed
 
     qualifiersHardwareMap hardware = new qualifiersHardwareMap();
     MecanumDrive drive;
@@ -181,6 +185,9 @@ public class BlueQualTeleOp extends LinearOpMode {
             // Y BUTTON: Start one-time rotation to goal
             if (yButton && !prevY) {
                 isRotatingToGoal = true;
+                // Reset PD controller state
+                prevRotationError = 0.0;
+                prevRotationTime = System.currentTimeMillis();
             }
             prevY = yButton;
 
@@ -290,37 +297,62 @@ public class BlueQualTeleOp extends LinearOpMode {
             double rotationAngleError = 0;
             double rotationPower = 0;
             double targetAngle = 0;
+            double rotationDerivative = 0;
 
-            // One-time rotation to goal
+            // One-time rotation to goal - PD Controller
             if (isRotatingToGoal) {
                 // Use the helper method that calculates error correctly
                 double angleError = LocalizationHelper.getAngleErrorToTarget(drive, goalX, goalY);
                 targetAngle = LocalizationHelper.getAngleToTarget(drive, goalX, goalY);
                 rotationAngleError = angleError;
 
+                // Calculate derivative (rate of change of error)
+                long currentTime = System.currentTimeMillis();
+                double dt = (currentTime - prevRotationTime) / 1000.0;  // Convert to seconds
+
+                if (dt > 0.001 && prevRotationTime != 0) {  // Avoid division by zero and skip first loop
+                    double derivative = (angleError - prevRotationError) / dt;
+                    rotationDerivative = derivative;
+
+                    // PD Control: P term pushes toward target, D term resists fast changes (damping)
+                    double pTerm = angleError * ROTATION_KP;
+                    double dTerm = derivative * ROTATION_KD;
+                    rx = pTerm + dTerm;
+
+                    // Apply minimum power only when far from target (>15 degrees) and not moving too fast
+                    if (Math.abs(angleError) > Math.toRadians(15.0) && Math.abs(rx) < ROTATION_MIN_POWER) {
+                        rx = Math.signum(angleError) * ROTATION_MIN_POWER;
+                    }
+
+                    // Clamp to max rotation power
+                    rx = Math.max(-ROTATION_MAX_POWER, Math.min(ROTATION_MAX_POWER, rx));
+                    rotationPower = rx;
+
+                    // Update previous values for next loop
+                    prevRotationError = angleError;
+                    prevRotationTime = currentTime;
+                } else {
+                    // First loop or invalid dt - use pure P control
+                    rx = angleError * ROTATION_KP;
+                    rx = Math.max(-ROTATION_MAX_POWER, Math.min(ROTATION_MAX_POWER, rx));
+                    rotationPower = rx;
+
+                    prevRotationError = angleError;
+                    prevRotationTime = currentTime;
+                }
+
                 // If within tolerance, stop rotating
                 if (Math.abs(angleError) < ROTATION_TOLERANCE_RAD) {
                     isRotatingToGoal = false;
                     rx = 0;
-                } else {
-                    // Apply proportional control with minimum power
-                    rx = angleError * ROTATION_KP;
-
-                    // Add minimum power to overcome static friction, but only if we're moving
-                    if (Math.abs(rx) > 0.05) {
-                        double sign = Math.signum(rx);
-                        rx = sign * Math.max(Math.abs(rx), ROTATION_MIN_POWER);
-                    }
-
-                    // Clamp to max rotation power to prevent overshoot
-                    rx = Math.max(-ROTATION_MAX_POWER, Math.min(ROTATION_MAX_POWER, rx));
-                    rotationPower = rx;
+                    prevRotationError = 0.0;  // Reset for next time
                 }
 
                 // Driver can still override with right stick
                 if (Math.abs(gamepad1.right_stick_x) > 0.1) {
                     isRotatingToGoal = false;
                     rx = (gamepad1.right_stick_x) * 0.75;
+                    prevRotationError = 0.0;  // Reset for next time
                 }
             }
 
@@ -350,6 +382,7 @@ public class BlueQualTeleOp extends LinearOpMode {
             telemetry.addLine("=== ROTATION DEBUG ===");
             telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
             telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
+            telemetry.addData("Derivative (d/dt)", "%.3f rad/s", rotationDerivative);
             telemetry.addData("Rotation Power", "%.3f", rotationPower);
             telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetAngle));
             telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
