@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.qualifiers;
 
-import static org.firstinspires.ftc.teamcode.PoseStorage.currentPose;
-
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -102,9 +100,9 @@ public class BlueQualTeleOp extends LinearOpMode {
         // Manual position selection during init
         while (!isStarted() && !isStopRequested()) {
             telemetry.addData("Starting Position", "X: %.2f, Y: %.2f, Heading: %.1f°",
-                PoseStorage.currentPose.position.x,
-                PoseStorage.currentPose.position.y,
-                Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
+                    PoseStorage.currentPose.position.x,
+                    PoseStorage.currentPose.position.y,
+                    Math.toDegrees(PoseStorage.currentPose.heading.toDouble()));
             telemetry.addLine();
             telemetry.addLine("=== MANUAL POSITION OVERRIDE ===");
             telemetry.addLine("DPAD_UP: Blue Auto");
@@ -133,7 +131,7 @@ public class BlueQualTeleOp extends LinearOpMode {
         // Initialize teleop - close blocker
         // Keep the full pose from auto (including heading) for accurate field-centric drive
         blocker.setPosition(BLOCKER_CLOSED);
-        LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
+        LocalizationHelper.resetPosition(drive, new Pose2d(PoseStorage.currentPose.position.x, PoseStorage.currentPose.position.y, 0));
 
         while (opModeIsActive()){
 
