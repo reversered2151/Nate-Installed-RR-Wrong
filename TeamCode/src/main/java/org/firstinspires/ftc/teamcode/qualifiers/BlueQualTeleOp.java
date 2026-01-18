@@ -62,8 +62,9 @@ public class BlueQualTeleOp extends LinearOpMode {
     // One-time rotation to goal
     private boolean isRotatingToGoal = false;
     private double targetRotationAngle = 0.0;
-    private static final double ROTATION_KP = 0.3;  // Proportional gain for rotation
-    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(4.0);  // 4 degree tolerance
+    private static final double ROTATION_KP = 1.2;  // Proportional gain for rotation
+    private static final double ROTATION_MIN_POWER = 0.15;  // Minimum power to overcome friction
+    private static final double ROTATION_TOLERANCE_RAD = Math.toRadians(2.0);  // 2 degree tolerance
 
     qualifiersHardwareMap hardware = new qualifiersHardwareMap();
     MecanumDrive drive;
@@ -165,6 +166,10 @@ public class BlueQualTeleOp extends LinearOpMode {
             double goalY = BLUE_GOAL_Y;
             double distanceToGoal = LocalizationHelper.getDistanceToTargetMeters(drive, goalX, goalY);
             double calculatedRpm = computeVelocityLinearRegression(distanceToGoal);
+
+            // Rotation debug variables
+            double rotationAngleError = 0;
+            double rotationPower = 0;
 
             // ========================================================================
             // SHOOTING CONTROLS
@@ -302,17 +307,13 @@ public class BlueQualTeleOp extends LinearOpMode {
             telemetry.addLine("B: Emergency Stop | DPAD_UP: Origin Reset");
             telemetry.addLine("Y: Rotate to Goal");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
-            telemetry.addData("Heading Lock", isRotatingToGoal ? "YES" : "NO");
-            if (isRotatingToGoal) {
-                double currentHeading = currentPose.heading.toDouble();
-                double angleError = targetRotationAngle - currentHeading;
-                // Normalize to [-π, π]
-                while (angleError > Math.PI) angleError -= 2 * Math.PI;
-                while (angleError < -Math.PI) angleError += 2 * Math.PI;
-                telemetry.addData("Target Angle", "%.1f deg", Math.toDegrees(targetRotationAngle));
-                telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentHeading));
-                telemetry.addData("Angle Error", "%.1f deg", Math.toDegrees(angleError));
-            }
+            telemetry.addLine();
+            telemetry.addLine("=== ROTATION DEBUG ===");
+            telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
+            telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
+            telemetry.addData("Rotation Power", "%.3f", rotationPower);
+            telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetRotationAngle));
+            telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
             telemetry.update();
 
             // ========================================================================
@@ -331,15 +332,25 @@ public class BlueQualTeleOp extends LinearOpMode {
                 while (angleError > Math.PI) angleError -= 2 * Math.PI;
                 while (angleError < -Math.PI) angleError += 2 * Math.PI;
 
+                rotationAngleError = angleError;
+
                 // If within tolerance, stop rotating
                 if (Math.abs(angleError) < ROTATION_TOLERANCE_RAD) {
                     isRotatingToGoal = false;
                     rx = 0;
                 } else {
-                    // Apply proportional control to rotation
+                    // Apply proportional control with minimum power
                     rx = angleError * ROTATION_KP;
+
+                    // Add minimum power to overcome static friction, but only if we're moving
+                    if (Math.abs(rx) > 0.05) {
+                        double sign = Math.signum(rx);
+                        rx = sign * Math.max(Math.abs(rx), ROTATION_MIN_POWER);
+                    }
+
                     // Clamp to reasonable values
                     rx = Math.max(-0.75, Math.min(0.75, rx));
+                    rotationPower = rx;
                 }
 
                 // Driver can still override with right stick
