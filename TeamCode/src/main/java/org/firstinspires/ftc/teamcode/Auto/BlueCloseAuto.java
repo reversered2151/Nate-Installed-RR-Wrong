@@ -39,22 +39,22 @@ public class BlueCloseAuto extends LinearOpMode {
         mechanisms m = new mechanisms(hardwareMap);
 
         TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(launchPose,Math.toRadians(50));
+                .strafeToLinearHeading(launchPose,Math.toRadians(45));
                 //shoot
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-6,-20),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-6,-54), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-6,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-8,-20),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-8,-54), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-8,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -6, -40, Math.toRadians(-90)))
-                .strafeToLinearHeading(launchPose,Math.toRadians(50));
+                .strafeToLinearHeading(launchPose,Math.toRadians(45));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(50)))
-                .strafeToLinearHeading(new Vector2d(18,-25),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(18,-58), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(18,-40), Math.toRadians(-90));
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
+                .strafeToLinearHeading(new Vector2d(16,-25),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(16,-58), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(16,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 18, -40,Math.toRadians(-90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));

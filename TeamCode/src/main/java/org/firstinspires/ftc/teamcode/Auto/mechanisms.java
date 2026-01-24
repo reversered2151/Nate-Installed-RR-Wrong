@@ -36,7 +36,7 @@ public class mechanisms {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             intake.setPower(.8);
-            uptake.setPower(.8);
+            uptake.setVelocity(1000);
             return false;
         }
     }
@@ -120,7 +120,7 @@ public class mechanisms {
         new SleepAction(1),
         blockerOpen(),
         intup(),
-        new SleepAction(1),
+        new SleepAction(.75),
         flywheelSpin2(),
         new SleepAction(1),
         flywheelStop(),
@@ -133,7 +133,7 @@ public class mechanisms {
             new SleepAction(1),
             blockerOpen(),
             intup(),
-            new SleepAction(1),
+            new SleepAction(.75),
             flywheelSpin2(),
             new SleepAction(1),
             flywheelStop(),
@@ -146,7 +146,7 @@ public class mechanisms {
             new SleepAction(1),
             blockerOpen(),
             intup(),
-            new SleepAction(1),
+            new SleepAction(.75),
             flywheelSpin2(),
             new SleepAction(1),
             flywheelStop(),
