@@ -308,6 +308,7 @@ public class RedQualTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = (gamepad1.right_stick_x)*.75;
 
+            /*
             // Rotation control variables for telemetry
             double rotationAngleError = 0;
             double rotationPower = 0;
@@ -371,6 +372,8 @@ public class RedQualTeleOp extends LinearOpMode {
                 }
             }
 
+
+             */
             // ========================================================================
             // TELEMETRY
             // ========================================================================
@@ -394,16 +397,16 @@ public class RedQualTeleOp extends LinearOpMode {
             telemetry.addLine("Y: Rotate to Goal");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
             telemetry.addLine();
-            telemetry.addLine("=== ROTATION DEBUG ===");
-            telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
-            telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
-            telemetry.addData("Derivative (d/dt)", "%.3f rad/s", rotationDerivative);
-            telemetry.addData("Rotation Power", "%.3f", rotationPower);
-            telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetAngle));
-            telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
-            telemetry.addData("Raw Heading (rad)", "%.3f", currentPose.heading.toDouble());
-            telemetry.addData("Goal X", goalX);
-            telemetry.addData("Goal Y", goalY);
+//            telemetry.addLine("=== ROTATION DEBUG ===");
+//            telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
+//            telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
+//            telemetry.addData("Derivative (d/dt)", "%.3f rad/s", rotationDerivative);
+//            telemetry.addData("Rotation Power", "%.3f", rotationPower);
+//            telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetAngle));
+//            telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
+//            telemetry.addData("Raw Heading (rad)", "%.3f", currentPose.heading.toDouble());
+//            telemetry.addData("Goal X", goalX);
+//            telemetry.addData("Goal Y", goalY);
             telemetry.update();
 
             // This button choice was made so that it is hard to hit on accident,

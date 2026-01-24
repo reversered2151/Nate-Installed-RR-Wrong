@@ -4,6 +4,8 @@ import static org.firstinspires.ftc.teamcode.PoseStorage.currentPose;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -18,6 +20,8 @@ import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 public class BlueQualTeleOp extends LinearOpMode {
 
     // Formula: RPM = REGRESSION_SLOPE * distance_meters + REGRESSION_INTERCEPT
+
+
     private static final double REGRESSION_SLOPE = 439.42018;
     private static final double REGRESSION_INTERCEPT = 764.10156;
 
@@ -39,6 +43,9 @@ public class BlueQualTeleOp extends LinearOpMode {
     // Servo positions (from mechanisms.java)
     private static final double BLOCKER_OPEN = 0.6;
     private static final double BLOCKER_CLOSED = 0.95;
+
+    private Action turnAction = null;
+
     // ========================================================================
 
     // Shooting state machine
@@ -184,14 +191,14 @@ public class BlueQualTeleOp extends LinearOpMode {
             boolean yButton = gamepad1.y;
 
 
-            // Y BUTTON: Start one-time rotation to goal
-            if (yButton && !prevY) {
-                isRotatingToGoal = true;
-                // Reset PD controller state
-                prevRotationError = 0.0;
-                prevRotationTime = System.currentTimeMillis();
-            }
-            prevY = yButton;
+//            // Y BUTTON: Start one-time rotation to goal
+//            if (yButton && !prevY) {
+//                isRotatingToGoal = true;
+//                // Reset PD controller state
+//                prevRotationError = 0.0;
+//                prevRotationTime = System.currentTimeMillis();
+//            }
+//            prevY = yButton;
 
             // LEFT BUMPER: Toggle intake and uptake on/off
             if (leftBumper && !prevLeftBumper && shootingState == ShootingState.IDLE) {
@@ -302,6 +309,7 @@ public class BlueQualTeleOp extends LinearOpMode {
             double x = gamepad1.left_stick_x;
             double rx = (gamepad1.right_stick_x)*.75;
 
+            /*
             // Rotation control variables for telemetry
             double rotationAngleError = 0;
             double rotationPower = 0;
@@ -364,6 +372,7 @@ public class BlueQualTeleOp extends LinearOpMode {
                     prevRotationError = 0.0;  // Reset for next time
                 }
             }
+            */
 
             // ========================================================================
             // TELEMETRY
@@ -388,16 +397,16 @@ public class BlueQualTeleOp extends LinearOpMode {
             telemetry.addLine("Y: Rotate to Goal");
             telemetry.addData("Intake Status", intake.getPower() > 0 ? "ON" : "OFF");
             telemetry.addLine();
-            telemetry.addLine("=== ROTATION DEBUG ===");
-            telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
-            telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
-            telemetry.addData("Derivative (d/dt)", "%.3f rad/s", rotationDerivative);
-            telemetry.addData("Rotation Power", "%.3f", rotationPower);
-            telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetAngle));
-            telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
-            telemetry.addData("Raw Heading (rad)", "%.3f", currentPose.heading.toDouble());
-            telemetry.addData("Goal X", goalX);
-            telemetry.addData("Goal Y", goalY);
+//            telemetry.addLine("=== ROTATION DEBUG ===");
+//            telemetry.addData("Heading Lock", isRotatingToGoal ? "ACTIVE" : "OFF");
+//            telemetry.addData("Rotation Error", "%.2f deg", Math.toDegrees(rotationAngleError));
+//            telemetry.addData("Derivative (d/dt)", "%.3f rad/s", rotationDerivative);
+//            telemetry.addData("Rotation Power", "%.3f", rotationPower);
+//            telemetry.addData("Target Heading", "%.1f deg", Math.toDegrees(targetAngle));
+//            telemetry.addData("Current Heading", "%.1f deg", Math.toDegrees(currentPose.heading.toDouble()));
+//            telemetry.addData("Raw Heading (rad)", "%.3f", currentPose.heading.toDouble());
+//            telemetry.addData("Goal X", goalX);
+//            telemetry.addData("Goal Y", goalY);
             telemetry.update();
 
             // This button choice was made so that it is hard to hit on accident,
@@ -408,28 +417,46 @@ public class BlueQualTeleOp extends LinearOpMode {
                 LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
             }
 
-            // Use Road Runner's heading for field-centric drive
-            double botHeading = currentPose.heading.toDouble();
+            // When you want to turn to an angle (e.g., button press)
+            if (gamepad1.y && !prevY && turnAction == null) {
+                turnAction = drive.actionBuilder(currentPose)
+                        .turnTo(Math.toRadians(45))  // your target heading
+                        .build();
+            }
+            prevY = yButton;
 
-            // Rotate the movement direction counter to the bot's rotation
-            double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
-            double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-            // rotX = rotX * 1.1;  // Removed: Road Runner localization tracks actual movement, multiplier causes drift
+            // Run the action each loop
+            if (turnAction != null) {
+                TelemetryPacket packet = new TelemetryPacket();
+                if (!turnAction.run(packet)) {
+                    turnAction = null;  // done
+                }
+            } else {
+                // Use Road Runner's heading for field-centric drive
+                double botHeading = currentPose.heading.toDouble();
 
-            // Denominator is the largest motor power (absolute value) or 1
-            // This ensures all the powers maintain the same ratio,
-            // but only if at least one is out of the range [-1, 1]
-            double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
-            double flPower = (rotY + rotX + rx) / denominator;
-            double blPower = (rotY - rotX + rx) / denominator;
-            double frPower = (rotY - rotX - rx) / denominator;
-            double brPower = (rotY + rotX - rx) / denominator;
+                // Rotate the movement direction counter to the bot's rotation
+                double rotX = x * Math.cos(-botHeading) - y * Math.sin(-botHeading);
+                double rotY = x * Math.sin(-botHeading) + y * Math.cos(-botHeading);
 
-            fl.setPower(flPower);
-            bl.setPower(blPower);
-            fr.setPower(frPower);
-            br.setPower(brPower);
+                // rotX = rotX * 1.1;  // Removed: Road Runner localization tracks actual movement, multiplier causes drift
+
+                // Denominator is the largest motor power (absolute value) or 1
+                // This ensures all the powers maintain the same ratio,
+                // but only if at least one is out of the range [-1, 1]
+                double denominator = Math.max(Math.abs(rotY) + Math.abs(rotX) + Math.abs(rx), 1);
+                double flPower = (rotY + rotX + rx) / denominator;
+                double blPower = (rotY - rotX + rx) / denominator;
+                double frPower = (rotY - rotX - rx) / denominator;
+                double brPower = (rotY + rotX - rx) / denominator;
+
+                fl.setPower(flPower);
+                bl.setPower(blPower);
+                fr.setPower(frPower);
+                br.setPower(brPower);
+            }
+
         }
     }
 
