@@ -23,8 +23,8 @@ public class RedQualTeleOp extends LinearOpMode {
     private static final double REGRESSION_INTERCEPT = 764.10156;
 
     // Goal positions on field (in inches, measured from field center)
-    private static final double RED_GOAL_X = -50.0;
-    private static final double RED_GOAL_Y = 50.0;
+    private static final double RED_GOAL_X = -60.0;
+    private static final double RED_GOAL_Y = 60.0;
 
     // Flywheel limits
     private static final double MIN_RPM = 500.0;
