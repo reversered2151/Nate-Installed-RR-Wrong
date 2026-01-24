@@ -128,7 +128,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
             if (gamepad1.dpad_up) {
                 // Blue Auto END position
-                LocalizationHelper.resetPosition(drive, new Pose2d(-24, -45, Math.toRadians(-90)));
+                LocalizationHelper.resetPosition(drive, new Pose2d(-24, -45, Math.toRadians(0)));
                 telemetry.addData("Position Override", "Blue Auto END (-24, -45, -90)");
                 telemetry.update();
                 sleep(300); // Debounce
@@ -417,14 +417,16 @@ public class BlueQualTeleOp extends LinearOpMode {
                 LocalizationHelper.resetPosition(drive, new Pose2d(currentPose.position.x, currentPose.position.y, 0));
             }
 
-            // When you want to turn to an angle (e.g., button press)
-            if (gamepad1.y && !prevY && turnAction == null) {
+            if (gamepad1.y && !yButton && turnAction == null) {
+                double dx = BLUE_GOAL_X - currentPose.position.x;
+                double dy = BLUE_GOAL_Y - currentPose.position.y;
+                double targetHeading = Math.atan2(dy, dx) + Math.PI;
+
                 turnAction = drive.actionBuilder(currentPose)
-                        .turnTo(Math.toRadians(45))  // your target heading
+                        .turnTo(targetHeading)
                         .build();
             }
             prevY = yButton;
-
 
             // Run the action each loop
             if (turnAction != null) {
@@ -432,7 +434,9 @@ public class BlueQualTeleOp extends LinearOpMode {
                 if (!turnAction.run(packet)) {
                     turnAction = null;  // done
                 }
+
             } else {
+
                 // Use Road Runner's heading for field-centric drive
                 double botHeading = currentPose.heading.toDouble();
 
