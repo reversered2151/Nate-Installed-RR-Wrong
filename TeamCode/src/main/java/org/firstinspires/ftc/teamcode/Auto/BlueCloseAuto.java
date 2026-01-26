@@ -43,20 +43,20 @@ public class BlueCloseAuto extends LinearOpMode {
                 //shoot
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-8,-20),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-8,-54), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-8,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-7,-20),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-7,-54), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-7,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -6, -40, Math.toRadians(-90)))
+        TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -7, -40, Math.toRadians(-90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));
                 //shoot
 
         TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(16,-25),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(16,-58), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(16,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(15,-25),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(15,-58), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(15,-40), Math.toRadians(-90));
 
-        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 18, -40,Math.toRadians(-90)))
+        TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 15, -40,Math.toRadians(-90)))
                 .strafeToLinearHeading(launchPose,Math.toRadians(45));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))

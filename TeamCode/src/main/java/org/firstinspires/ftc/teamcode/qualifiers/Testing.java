@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Disabled
 @TeleOp(name = "Testing", group = "testing")
 public class Testing extends LinearOpMode {
 
@@ -80,7 +79,7 @@ public class Testing extends LinearOpMode {
 
             if (gamepad1.y) {
                 intake.setPower(.8);
-                uptake.setPower(.8);
+                uptake.setVelocity(1000);
             } else if (gamepad1.a) {
                 intake.setPower(0);
                 uptake.setPower(0);

@@ -29,6 +29,10 @@ public class BlueQualTeleOp extends LinearOpMode {
     private static final double BLUE_GOAL_X = -50.0;
     private static final double BLUE_GOAL_Y = -50.0;
 
+
+    private static final double BLUE_GOAL_X_HEADING = -50.0;
+    private static final double BLUE_GOAL_Y_HEADING = -50.0;
+
     // Flywheel limits
     private static final double MIN_RPM = 500.0;
     private static final double MAX_RPM = 6000.0;
@@ -418,9 +422,9 @@ public class BlueQualTeleOp extends LinearOpMode {
             }
 
             if (gamepad1.y && !yButton && turnAction == null) {
-                double dx = BLUE_GOAL_X - currentPose.position.x;
-                double dy = BLUE_GOAL_Y - currentPose.position.y;
-                double targetHeading = Math.atan2(dy, dx) + Math.PI;
+                double dx = BLUE_GOAL_X_HEADING - currentPose.position.x;
+                double dy = BLUE_GOAL_Y_HEADING - currentPose.position.y;
+                double targetHeading = Math.atan2(dy, dx) - Math.toRadians(90);
 
                 turnAction = drive.actionBuilder(currentPose)
                         .turnTo(targetHeading)
