@@ -5,9 +5,11 @@ import static org.firstinspires.ftc.teamcode.PoseStorage.currentPose;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.LocalizationHelper;
@@ -109,7 +111,12 @@ public class RedQualTeleOp extends LinearOpMode {
         bl = drive.leftBack;
         br = drive.rightBack;
 
-
+        IMU imu = hardwareMap.get(IMU.class, "imu");
+        // Adjust the orientation parameters to match your robot
+        IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
+        imu.initialize(parameters);
 
         // Manual position selection during init
         while (!isStarted() && !isStopRequested()) {
@@ -205,7 +212,7 @@ public class RedQualTeleOp extends LinearOpMode {
                 // Toggle intake/uptake
                 if (intake.getPower() == 0) {
                     intake.setPower(0.8);
-                    uptake.setVelocity(1000);
+                    uptake.setVelocity(1500);
                 } else {
                     intake.setPower(0);
                     uptake.setVelocity(0);
