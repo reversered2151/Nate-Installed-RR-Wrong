@@ -68,6 +68,11 @@ public final class TwoDeadWheelLocalizer implements Localizer {
     @Override
     public void setPose(Pose2d pose) {
         this.pose = pose;
+
+        // Sync lastHeading with current IMU reading to prevent heading desynchronization
+        // This ensures subsequent updates calculate headingDelta correctly relative to the new pose
+        YawPitchRollAngles angles = imu.getRobotYawPitchRollAngles();
+        lastHeading = Rotation2d.exp(angles.getYaw(AngleUnit.RADIANS));
     }
 
     @Override
