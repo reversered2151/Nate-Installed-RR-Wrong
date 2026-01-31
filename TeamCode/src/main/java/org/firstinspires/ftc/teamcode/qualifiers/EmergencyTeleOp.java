@@ -90,7 +90,7 @@ public class EmergencyTeleOp extends LinearOpMode {
             if (leftBumper && !prevLeftBumper) {
                 if (intake.getPower() == 0) {
                     intake.setPower(0.8);
-                    uptake.setVelocity(1000);
+                    uptake.setVelocity(1550);
                 } else {
                     intake.setPower(0);
                     uptake.setVelocity(0);
@@ -108,7 +108,7 @@ public class EmergencyTeleOp extends LinearOpMode {
                     sleep(1000);
                     blocker.setPosition(BLOCKER_OPEN);
                     intake.setPower(0.8);
-                    uptake.setVelocity(1000);
+                    uptake.setVelocity(1550);
                 } else {
                     // Stop shooting
                     flywheel.setPower(0);

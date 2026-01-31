@@ -36,7 +36,7 @@ public class mechanisms {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
             intake.setPower(.8);
-            uptake.setVelocity(1500);
+            uptake.setVelocity(1550);
             return false;
         }
     }

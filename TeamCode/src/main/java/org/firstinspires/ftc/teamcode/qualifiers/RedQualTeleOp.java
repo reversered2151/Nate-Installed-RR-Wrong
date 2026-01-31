@@ -212,7 +212,7 @@ public class RedQualTeleOp extends LinearOpMode {
                 // Toggle intake/uptake
                 if (intake.getPower() == 0) {
                     intake.setPower(0.8);
-                    uptake.setVelocity(1500);
+                    uptake.setVelocity(1550);
                 } else {
                     intake.setPower(0);
                     uptake.setVelocity(0);
