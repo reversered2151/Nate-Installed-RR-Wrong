@@ -44,7 +44,7 @@ public class BlueQualTeleOp extends LinearOpMode {
     // Shooting timing
     private static final long SHOOT_DURATION_MS = 2000;  // Hold shooting for 2 seconds
     private static final long FULL_SPEED_DURATION_MS = 1000;  // Full speed for 1 second
-    private static final double VELOCITY_REDUCTION = 20.0;  // Reduce velocity by 20 after first second
+    private static final double VELOCITY_REDUCTION = 40.0;  // Reduce velocity by 20 after first second
 
     // Servo positions (from mechanisms.java)
     private static final double BLOCKER_OPEN = 0.6;
@@ -69,6 +69,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
     // Button debouncing
     private boolean prevRightBumper = false;
+    private boolean prevlt = false;
     private boolean prevDpadLeft = false;
     private boolean prevB = false;
     private boolean prevLeftBumper = false;
@@ -122,7 +123,7 @@ public class BlueQualTeleOp extends LinearOpMode {
         IMU imu = hardwareMap.get(IMU.class, "imu");
         // Adjust the orientation parameters to match your robot
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT,
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT,
                 RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD));
         imu.initialize(parameters);
 
@@ -200,6 +201,7 @@ public class BlueQualTeleOp extends LinearOpMode {
 
             boolean rightBumper = gamepad1.right_bumper;
             boolean leftBumper = gamepad1.left_bumper;
+            boolean lt = gamepad1.a;
             boolean bButton = gamepad1.b;
             boolean dpadLeft = gamepad1.dpad_left;
             boolean yButton = gamepad1.y;
@@ -226,6 +228,18 @@ public class BlueQualTeleOp extends LinearOpMode {
                 }
             }
             prevLeftBumper = leftBumper;
+
+            if (lt && !prevlt && shootingState == ShootingState.IDLE) {
+                // Toggle intake/uptake
+                if (intake.getPower() == 0) {
+                    intake.setPower(-0.8);
+                    uptake.setVelocity(-1550);
+                } else {
+                    intake.setPower(0);
+                    uptake.setVelocity(0);
+                }
+            }
+            prevlt = lt;
 
             // RIGHT BUMPER: Start shooting sequence
             if (rightBumper && !prevRightBumper && shootingState == ShootingState.IDLE) {

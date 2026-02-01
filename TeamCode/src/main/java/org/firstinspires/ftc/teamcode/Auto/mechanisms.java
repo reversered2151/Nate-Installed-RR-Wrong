@@ -73,7 +73,7 @@ public class mechanisms {
     public class flywheelSpin2 implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            flywheel.setVelocity(1210);
+            flywheel.setVelocity(1190);
             return false;
         }
     }

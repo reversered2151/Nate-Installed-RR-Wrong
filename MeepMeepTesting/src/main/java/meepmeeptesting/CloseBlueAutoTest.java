@@ -10,8 +10,8 @@ public class CloseBlueAutoTest {
 
     //Location for the robot to start
     //TODO Change if starting close/far and for red/blue
-    static double startX = 60;
-    static double startY = -31;
+    static double startX = -60;
+    static double startY = -37;
     static double startHeading = 0; //In degrees
     static Pose2d startPose = new Pose2d(startX,startY,Math.toRadians(startHeading));
 

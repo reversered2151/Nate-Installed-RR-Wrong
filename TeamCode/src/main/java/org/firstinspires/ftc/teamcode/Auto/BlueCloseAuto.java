@@ -22,6 +22,8 @@ import org.firstinspires.ftc.teamcode.LocalizationHelper;
 import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 import org.firstinspires.ftc.teamcode.qualifiers.qualifiersHardwareMap;
 
+import java.util.Vector;
+
 @Config
 @Autonomous(name = "Close Blue Auto", group = "Autonomous")
 public class BlueCloseAuto extends LinearOpMode {
@@ -34,7 +36,7 @@ public class BlueCloseAuto extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d initialPose = new Pose2d(-60, -36, Math.toRadians(0));
+        Pose2d initialPose = new Pose2d(-60, -37, Math.toRadians(0));
         MecanumDrive drive = LocalizationHelper.initializeForAuto(hardwareMap, initialPose);
         mechanisms m = new mechanisms(hardwareMap);
 
@@ -43,12 +45,12 @@ public class BlueCloseAuto extends LinearOpMode {
                 //shoot
 
         TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
-                .strafeToLinearHeading(new Vector2d(-7,-20),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-7,-54), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-7,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-10.5,-20),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-10.5,-54), Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(-10.5,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -7, -40, Math.toRadians(-90)))
-                .strafeToLinearHeading(launchPose,Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(launchX,launchY+2),Math.toRadians(45));
                 //shoot
 
         TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(45)))
@@ -57,7 +59,7 @@ public class BlueCloseAuto extends LinearOpMode {
                 .strafeToLinearHeading(new Vector2d(15,-40), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 15, -40,Math.toRadians(-90)))
-                .strafeToLinearHeading(launchPose,Math.toRadians(45));
+                .strafeToLinearHeading(new Vector2d(launchX, launchY+4),Math.toRadians(45));
 
         TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(45)))
                 .strafeToLinearHeading(new Vector2d(-24,-45),Math.toRadians(-90));
