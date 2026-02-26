@@ -1,43 +1,51 @@
 package regionals;
 
-import com.pedropathing.geometry.Pose;
+import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.PoseVelocity2d;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.PoseStorage;
-import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import org.firstinspires.ftc.teamcode.subsystems.*;
+import org.firstinspires.ftc.teamcode.RRStuff.MecanumDrive;
 
 import dev.nextftc.core.commands.utility.LambdaCommand;
 import dev.nextftc.core.components.BindingsComponent;
 import dev.nextftc.core.components.SubsystemComponent;
-import dev.nextftc.extensions.pedro.PedroComponent;
-import dev.nextftc.extensions.pedro.PedroDriverControlled;
 import dev.nextftc.ftc.Gamepads;
 import dev.nextftc.ftc.NextFTCOpMode;
 import dev.nextftc.ftc.components.BulkReadComponent;
-import dev.nextftc.hardware.driving.DriverControlledCommand;
+import subsystems.Shooting;
+import subsystems.flywheel;
+import subsystems.fullIntake;
+import subsystems.intake;
+import subsystems.servo;
+import subsystems.uptake;
 
 @TeleOp(name = "BLUE teleop")
 public class BlueRegionalsTeleOp extends NextFTCOpMode {
 
-    private static final double BLUE_GOAL_X = 13;
-    private static final double BLUE_GOAL_Y = 137;
+    // Goal coordinates (converted: Pedro - 72)
+    private static final double BLUE_GOAL_X = -59;
+    private static final double BLUE_GOAL_Y = 65;
 
     //todo update these to play with for the regression
-    private static final double BLUE_GOAL_X_DISTANCE = 13;
-    private static final double BLUE_GOAL_Y_DISTANCE = 137;
+    private static final double BLUE_GOAL_X_DISTANCE = -59;
+    private static final double BLUE_GOAL_Y_DISTANCE = 65;
 
     private boolean flywheelActive = false;
     private double targetHeading = 0;
+    private boolean turningToGoal = false;
 
-    private static final Pose BLUE_AUTO_END = new Pose(30, 90, Math.toRadians(180));
-    private static final Pose BLUE_GOAL = new Pose(34, 134, Math.toRadians(270));
-    private static final Pose CENTER = new Pose(72, 72, Math.toRadians(180));
+    // Preset poses (converted: Pedro - 72)
+    private static final Pose2d BLUE_AUTO_END = new Pose2d(-42, 18, Math.toRadians(180));
+    private static final Pose2d BLUE_GOAL = new Pose2d(-38, 62, Math.toRadians(270));
+    private static final Pose2d CENTER = new Pose2d(0, 0, Math.toRadians(180));
+
+    private MecanumDrive drive;
 
     public BlueRegionalsTeleOp() {
         addComponents(
                 BulkReadComponent.INSTANCE,
-                new PedroComponent(Constants::createFollower),
                 new SubsystemComponent(flywheel.INSTANCE, intake.INSTANCE, uptake.INSTANCE, servo.INSTANCE),
                 BindingsComponent.INSTANCE
         );
@@ -47,58 +55,49 @@ public class BlueRegionalsTeleOp extends NextFTCOpMode {
     public void onInit() {
         servo.INSTANCE.close().schedule();
 
-        servo.INSTANCE.close().schedule();
-
+        Pose2d initialPose;
         if (PoseStorage.currentPose != null) {
-            PedroComponent.follower().setPose(PoseStorage.currentPose);
+            initialPose = PoseStorage.currentPose;
         } else {
-            PedroComponent.follower().setPose(CENTER);  // default to start position
+            initialPose = CENTER;
         }
+        drive = new MecanumDrive(hardwareMap, initialPose);
     }
 
     @Override
     public void onWaitForStart() {
-        Pose pose = PedroComponent.follower().getPose();
+        drive.updatePoseEstimate();
+        Pose2d pose = drive.localizer.getPose();
         telemetry.addLine("BLUE TELE");
         telemetry.addLine();
 
         telemetry.addData("Position", "X: %.1f, Y: %.1f, H: %.1f°",
-                pose.getX(), pose.getY(), Math.toDegrees(pose.getHeading()));
+                pose.position.x, pose.position.y, Math.toDegrees(pose.heading.toDouble()));
         telemetry.addLine("DPAD: UP=AutoEnd, DOWN=Center, RIGHT=Goal");
         telemetry.update();
 
         if (gamepad1.dpad_up) {
-            PedroComponent.follower().setPose(BLUE_AUTO_END);
+            drive.localizer.setPose(BLUE_AUTO_END);
         } else if (gamepad1.dpad_down) {
-            PedroComponent.follower().setPose(CENTER);
+            drive.localizer.setPose(CENTER);
         } else if (gamepad1.dpad_right) {
-            PedroComponent.follower().setPose(BLUE_GOAL);
+            drive.localizer.setPose(BLUE_GOAL);
         }
     }
 
     @Override
     public void onStartButtonPressed() {
-        // Field centric driving
-        DriverControlledCommand driverControlled = new PedroDriverControlled(
-                Gamepads.gamepad1().leftStickY(),
-                Gamepads.gamepad1().leftStickX(),
-                Gamepads.gamepad1().rightStickX().map(value -> -value * 0.7),
-                false
-        );
-        driverControlled.schedule();
-
-
         // Both stick buttons: Reset heading (current facing = new forward)
         Gamepads.gamepad1().leftStickButton().and(Gamepads.gamepad1().rightStickButton())
                 .whenBecomesTrue(
                         new LambdaCommand("Reset Heading")
                                 .setStart(() -> {
-                                    Pose pose = PedroComponent.follower().getPose();
-                                    PedroComponent.follower().setPose(new Pose(pose.getX(), pose.getY(), Math.toRadians(180)));
+                                    Pose2d pose = drive.localizer.getPose();
+                                    drive.localizer.setPose(new Pose2d(
+                                            pose.position, Math.toRadians(180)));
                                 })
                                 .setIsDone(() -> true)
                 );
-
 
         // RIGHT TRIGGER: Toggle flywheel
         Gamepads.gamepad1().rightTrigger().greaterThan(0.5).whenBecomesTrue(
@@ -132,23 +131,23 @@ public class BlueRegionalsTeleOp extends NextFTCOpMode {
                         .setIsDone(() -> true)
         );
 
+        // Y BUTTON: Turn to goal
         Gamepads.gamepad1().y().whenBecomesTrue(
                 new LambdaCommand("Turn to Goal")
                         .setStart(() -> {
-                            Pose pose = PedroComponent.follower().getPose();
+                            Pose2d pose = drive.localizer.getPose();
                             targetHeading = calculateHeadingToGoal(pose);
-                            PedroComponent.follower().turnTo(targetHeading);
+                            turningToGoal = true;
                         })
                         .setIsDone(() -> {
-                            double current = PedroComponent.follower().getPose().getHeading();
+                            double current = drive.localizer.getPose().heading.toDouble();
                             double diff = targetHeading - current;
                             while (diff > Math.PI) diff -= 2 * Math.PI;
                             while (diff < -Math.PI) diff += 2 * Math.PI;
                             return Math.abs(diff) < Math.toRadians(5);
                         })
                         .setStop((interrupted) -> {
-                            PedroComponent.follower().breakFollowing();
-                            PedroComponent.follower().startTeleopDrive();
+                            turningToGoal = false;
                         })
         );
 
@@ -165,14 +164,15 @@ public class BlueRegionalsTeleOp extends NextFTCOpMode {
         // DPAD UP: Reset position
         Gamepads.gamepad1().dpadUp().whenBecomesTrue(
                 new LambdaCommand("Reset Position")
-                        .setStart(() -> PedroComponent.follower().setPose(new Pose(72, 72, Math.toRadians(180))))
+                        .setStart(() -> drive.localizer.setPose(
+                                new Pose2d(0, 0, Math.toRadians(180))))
                         .setIsDone(() -> true)
         );
     }
 
-    private double calculateHeadingToGoal(Pose pose) {
-        double dx = BLUE_GOAL_X - pose.getX();
-        double dy = BLUE_GOAL_Y - pose.getY();
+    private double calculateHeadingToGoal(Pose2d pose) {
+        double dx = BLUE_GOAL_X - pose.position.x;
+        double dy = BLUE_GOAL_Y - pose.position.y;
         double heading = Math.atan2(dy, dx);
 
         // Normalize to [-PI, PI]
@@ -184,7 +184,33 @@ public class BlueRegionalsTeleOp extends NextFTCOpMode {
 
     @Override
     public void onUpdate() {
-        Pose pose = PedroComponent.follower().getPose();
+        drive.updatePoseEstimate();
+        Pose2d pose = drive.localizer.getPose();
+
+        // Field-centric driving
+        double y = -gamepad1.left_stick_y;   // forward
+        double x = -gamepad1.left_stick_x;   // strafe
+        double rx = -gamepad1.right_stick_x * 0.7;  // rotation
+
+        if (turningToGoal) {
+            // P-controller for turn to goal
+            double current = pose.heading.toDouble();
+            double error = targetHeading - current;
+            while (error > Math.PI) error -= 2 * Math.PI;
+            while (error < -Math.PI) error += 2 * Math.PI;
+            double turnPower = error * 0.8;
+            turnPower = Math.max(-0.5, Math.min(0.5, turnPower));
+            drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), turnPower));
+        } else {
+            // Field-centric rotation
+            double heading = pose.heading.toDouble();
+            double rotX = x * Math.cos(-heading) - y * Math.sin(-heading);
+            double rotY = x * Math.sin(-heading) + y * Math.cos(-heading);
+
+            drive.setDrivePowers(new PoseVelocity2d(new Vector2d(rotY, rotX), rx));
+        }
+
+        // Flywheel velocity control
         double distance = getDistanceToGoal();
         double calculatedVelocity = Shooting.calculateVelocity(distance);
 
@@ -203,9 +229,9 @@ public class BlueRegionalsTeleOp extends NextFTCOpMode {
         telemetry.addData("Goal Velocity", "%.0f", flywheel.INSTANCE.getGoalVelocity());
         telemetry.addLine();
         telemetry.addLine("=== POSITION ===");
-        telemetry.addData("X", "%.2f", pose.getX());
-        telemetry.addData("Y", "%.2f", pose.getY());
-        telemetry.addData("Heading", "%.1f°", Math.toDegrees(pose.getHeading()));
+        telemetry.addData("X", "%.2f", pose.position.x);
+        telemetry.addData("Y", "%.2f", pose.position.y);
+        telemetry.addData("Heading", "%.1f°", Math.toDegrees(pose.heading.toDouble()));
         telemetry.addLine();
         telemetry.addLine("=== CONTROLS ===");
         telemetry.addLine("RT: Toggle Flywheel | RB: Shoot");
@@ -215,9 +241,9 @@ public class BlueRegionalsTeleOp extends NextFTCOpMode {
     }
 
     private double getDistanceToGoal() {
-        Pose pose = PedroComponent.follower().getPose();
-        double dx = BLUE_GOAL_X_DISTANCE - pose.getX();
-        double dy = BLUE_GOAL_Y_DISTANCE - pose.getY();
+        Pose2d pose = drive.localizer.getPose();
+        double dx = BLUE_GOAL_X_DISTANCE - pose.position.x;
+        double dy = BLUE_GOAL_Y_DISTANCE - pose.position.y;
         return Math.sqrt(dx * dx + dy * dy) * 0.0254;
     }
 }
