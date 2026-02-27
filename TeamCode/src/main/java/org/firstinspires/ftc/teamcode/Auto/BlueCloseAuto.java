@@ -41,27 +41,36 @@ public class BlueCloseAuto extends LinearOpMode {
         mechanisms m = new mechanisms(hardwareMap);
 
         TrajectoryActionBuilder ShootPreload = drive.actionBuilder(initialPose)
-                .strafeToLinearHeading(launchPose,Math.toRadians(-45));
+                .strafeToLinearHeading(launchPose,Math.toRadians(225));
                 //shoot
 
-        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(-45)))
+        TrajectoryActionBuilder IntakeFirstStack = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(-10.5,-20),Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-10.5,-54), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(-10.5,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(-10.5,-54), Math.toRadians(-90));
+
+        TrajectoryActionBuilder gate = drive.actionBuilder(new Pose2d( -10.5, -54, Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(0, -54),Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootFirstStack = drive.actionBuilder(new Pose2d( -7, -40, Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(launchX,launchY+2),Math.toRadians(-45));
+                .strafeToLinearHeading(new Vector2d(launchX,launchY+2),Math.toRadians(225));
                 //shoot
 
-        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(-45)))
+        TrajectoryActionBuilder IntakeSecondStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(15,-25),Math.toRadians(-90))
                 .strafeToLinearHeading(new Vector2d(15,-58), Math.toRadians(-90))
-                .strafeToLinearHeading(new Vector2d(15,-40), Math.toRadians(-90));
+                .strafeToLinearHeading(new Vector2d(15,-52), Math.toRadians(-90));
 
         TrajectoryActionBuilder ShootSecondStack = drive.actionBuilder(new Pose2d( 15, -40,Math.toRadians(-90)))
-                .strafeToLinearHeading(new Vector2d(launchX, launchY+4),Math.toRadians(-45));
+                .strafeToLinearHeading(new Vector2d(launchX, launchY+4),Math.toRadians(225));
 
-        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(-45)))
+        TrajectoryActionBuilder IntakeThirdStack = drive.actionBuilder(new Pose2d( launchX, launchY, Math.toRadians(225)))
+                .strafeToLinearHeading(new Vector2d(39,-25),Math.toRadians(-90))
+                .strafeToLinearHeading(new Vector2d(39,-58), Math.toRadians(-90));
+
+        TrajectoryActionBuilder ShootThirdStack = drive.actionBuilder(new Pose2d( 39, -58,Math.toRadians(-90)))
+                .strafeToLinearHeading(new Vector2d(launchX, launchY+6),Math.toRadians(225));
+
+        TrajectoryActionBuilder leave = drive.actionBuilder(new Pose2d(launchX, launchY, Math.toRadians(225)))
                 .strafeToLinearHeading(new Vector2d(-24,-45),Math.toRadians(-90));
         // actions that need to happen on init; for instance, a claw tightening.
 
@@ -76,31 +85,49 @@ public class BlueCloseAuto extends LinearOpMode {
 
         if (isStopRequested()) return;
 
-        Action shootFirst = ShootPreload.build();
+        Action shootPre = ShootPreload.build();
         Action intakeFirst = IntakeFirstStack.build();
-        Action shootSecond = ShootFirstStack.build();
+        Action shootFirst = ShootFirstStack.build();
         Action intakeSecond = IntakeSecondStack.build();
-        Action shootThird = ShootSecondStack.build();
+        Action shootSecond = ShootSecondStack.build();
+        Action gateClear = gate.build();
+        Action intakeThird = IntakeThirdStack.build();
+        Action shootThird = ShootThirdStack.build();
         Action Leave = leave.build();
 
         Actions.runBlocking(
                 new SequentialAction(
                         m.blockerClose(),
-                        shootFirst,
+                        m.flywheelSpin(),
+                        shootPre,
                         m.shootingSequence,
                         m.blockerClose(),
+                        m.flywheelStop(),
                         new SleepAction(.5),
 
                         intakeFirst,
-                        shootSecond,
+                        gateClear,
+                        m.flywheelSpin(),
+                        shootFirst,
                         m.shootingSequence2,
                         m.blockerClose(),
+                        m.flywheelStop(),
                         new SleepAction(.5),
 
                         intakeSecond,
-                        shootThird,
+                        m.flywheelSpin(),
+                        shootSecond,
                         m.shootingSequence3,
                         m.blockerClose(),
+                        m.flywheelStop(),
+                        new SleepAction(.5),
+
+                        intakeThird,
+                        m.flywheelSpin(),
+                        shootThird,
+                        m.shootingSequence4,
+                        m.blockerClose(),
+                        m.flywheelStop(),
                         new SleepAction(.5),
 
                         Leave

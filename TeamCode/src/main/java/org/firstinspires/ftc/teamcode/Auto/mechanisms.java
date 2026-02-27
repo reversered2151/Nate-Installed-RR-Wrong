@@ -115,44 +115,40 @@ public class mechanisms {
     }
 
     public SequentialAction shootingSequence = new SequentialAction(
-        intupoff(),
-        flywheelSpin(),
-        new SleepAction(1),
-        blockerOpen(),
-        intup(),
-        new SleepAction(1),
-        flywheelSpin2(),
-        new SleepAction(1),
-        flywheelStop(),
-        blockerClose()
+            intupoff(),
+            blockerOpen(),
+            new SleepAction(.5),
+            intup(),
+            new SleepAction(1.5),
+            blockerClose()
     );
 
     public SequentialAction shootingSequence2 = new SequentialAction(
             intupoff(),
-            flywheelSpin(),
-            new SleepAction(1),
             blockerOpen(),
+            new SleepAction(.5),
             intup(),
-            new SleepAction(1),
-            flywheelSpin2(),
-            new SleepAction(1),
-            flywheelStop(),
+            new SleepAction(1.5),
             blockerClose()
     );
 
     public SequentialAction shootingSequence3 = new SequentialAction(
             intupoff(),
-            flywheelSpin(),
-            new SleepAction(1),
             blockerOpen(),
+            new SleepAction(.5),
             intup(),
-            new SleepAction(1),
-            flywheelSpin2(),
-            new SleepAction(1),
-            flywheelStop(),
+            new SleepAction(1.5),
             blockerClose()
     );
 
+    public SequentialAction shootingSequence4 = new SequentialAction(
+            intupoff(),
+            blockerOpen(),
+            new SleepAction(.5),
+            intup(),
+            new SleepAction(1.5),
+            blockerClose()
+    );
 
 
 
